@@ -68,10 +68,10 @@ public class WeightedGraph {
 	//return an array of adjacent vertexes 
 	public int [] neighbors (int vertex){
 		int count = 0;
-		for (int i = 0; i < edges[vertex].length; i ++){
+		for (int i = 0; i < edges[vertex].length; i++){
 			//see if there are any edges from that vertex
 			if (edges[vertex][i] > 0)
-				count ++;
+				count++;
 		}
 		int[] neighbor = new int[count];
 		count = 0;
@@ -80,7 +80,7 @@ public class WeightedGraph {
 			if(edges[vertex][i]>0){
 				//include other vertex (i) if there is an edge
 				neighbor[count] = i;
-				count ++;
+				count++;
 			}
 		}
 		return neighbor;
@@ -92,7 +92,7 @@ public class WeightedGraph {
 			System.out.print(vertexName[i] + ": ");
 			for (int j = 0; j < edges[i].length; j++){
 				if (edges[i][j] > 0)
-					System.out.print(vertexName[j] + ":" + edges[i][j] + " ");;
+					System.out.print(vertexName[j] + ":" + edges[i][j] + " ");
 			}
 			System.out.println();
 		}
