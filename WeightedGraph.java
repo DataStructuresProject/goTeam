@@ -98,8 +98,50 @@ public class WeightedGraph {
 		}
 	}
 	
+	public int[] dijkstra(graph, start, end){
+		int []  dist = new int[graph.size];	//shortest distance from source
+		int[] prev = new int[graph.size];	//previous node in the path
+		boolean[] visited = new boolean[graph.size()];
+		for(int i=0; i<dist.length(); i++){
+			dist[i] = Integer.MAX_VALUE;	//as close to infinity as possible
+		}
+		dist[start] = 0;	//distance from source to source is 0
+		for (int i=0; i<dist.length(); i++){
+			while(next!=end){
+				int next = minVertex(dist, visited);
+				visited[next] = true;
+				
+				int[] neighbors = graph.neighbors(next);
+				for(int j = 0; j<neighbors.length; j++){
+					int v = neighbors[j];
+					int d = dist[next] + graph.getWeight(next, v);
+					if (dist[v] > d){
+						dis[v] = d;
+						prev[v] = next;
+					}
+				}
+			}
+		}
+		return prev;
+	}
+	public static int minVertex( int[] dist, boolean[] visited){
+		int x = Integer.MAX_VALUE;
+		int y = -1;	//will return this if graph isnt connected here
+		for(int i=0; i<dist.length(); i++){
+			//check if visited and if distance isnt infinity
+			if(!v[i] && dist[i]<x){
+				y = i;
+				x = dist[i];
+			}
+		}
+		return y;
+	}
 	public static void main(String args[]){
 		//create the weighted graph here
+		int numOfNodes = 1;
+		WeightedGraph graph = new WeightedGraph(numOfNodes);
+		
+
 	}
 	
 }
