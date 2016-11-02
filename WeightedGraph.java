@@ -1,4 +1,4 @@
-//Michelle Alty was an author of this class
+//Michelle Alty and Kenny Williams were authors of this class 
 public class WeightedGraph {
 	
 	private int [][] edges;			//adjacency matrix
@@ -98,7 +98,7 @@ public class WeightedGraph {
 		}
 	}
 	
-	public int[] dijkstra(WeightedGraph graph, int start, int end){
+	public static int[] dijkstra(WeightedGraph graph, int start, int end){
 		int []  dist = new int[graph.size()];	//shortest distance from source
 		int[] prev = new int[graph.size()];	//previous node in the path
 		boolean[] visited = new boolean[graph.size()];
@@ -108,9 +108,8 @@ public class WeightedGraph {
 		dist[start] = 0;	//distance from source to source is 0
 		for (int i=0; i<dist.length; i++){
 			int next = minVertex(dist, visited);
-			while(next!=end){
+			if(next!=end){
 				visited[next] = true;
-				
 				int[] neighbors = graph.neighbors(next);
 				for(int j = 0; j<neighbors.length; j++){
 					int v = neighbors[j];
@@ -121,6 +120,10 @@ public class WeightedGraph {
 					}
 				}
 			}
+			else{
+				i = dist.length;
+			}
+			
 		}
 		return prev;
 	}
@@ -136,10 +139,39 @@ public class WeightedGraph {
 		}
 		return y;
 	}
+	
+    public static void printPath (WeightedGraph G, int [] prev, int s, int e) {
+       final java.util.ArrayList<Object> path = new java.util.ArrayList<Object>();
+       int x = e;
+       while (x!=s) {
+          path.add(0, G.getVertexName(x));
+          x = prev[x];
+        }
+        path.add(0, G.getVertexName(s));
+        System.out.println (path);
+     }
+    
 	public static void main(String args[]){
 		//create the weighted graph here
-		int numOfNodes = 1;
-		WeightedGraph graph = new WeightedGraph(numOfNodes);
+		WeightedGraph graph = new WeightedGraph(5);
+		graph.setVertexName(0, "V1");
+		graph.setVertexName(1, "V2");
+		graph.setVertexName(2, "V3");
+		graph.setVertexName(3, "V4");
+		graph.setVertexName(4, "V5");
+		
+		graph.addEdge(0, 1, 10);
+		graph.addEdge(0, 2, 5);
+		graph.addEdge(1, 2, 3);
+		graph.addEdge(1, 3, 1);
+		graph.addEdge(2, 4, 2);
+		graph.addEdge(2, 3, 9);
+		graph.addEdge(4, 3, 6);
+		
+		int[] prev;
+		prev = dijkstra(graph, 0, 4);
+		
+		printPath(graph, prev, 0, 4);
 		
 
 	}
