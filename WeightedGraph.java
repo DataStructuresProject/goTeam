@@ -98,17 +98,17 @@ public class WeightedGraph {
 		}
 	}
 	
-	public int[] dijkstra(graph, start, end){
-		int []  dist = new int[graph.size];	//shortest distance from source
-		int[] prev = new int[graph.size];	//previous node in the path
+	public int[] dijkstra(WeightedGraph graph, int start, int end){
+		int []  dist = new int[graph.size()];	//shortest distance from source
+		int[] prev = new int[graph.size()];	//previous node in the path
 		boolean[] visited = new boolean[graph.size()];
-		for(int i=0; i<dist.length(); i++){
+		for(int i=0; i<dist.length; i++){
 			dist[i] = Integer.MAX_VALUE;	//as close to infinity as possible
 		}
 		dist[start] = 0;	//distance from source to source is 0
-		for (int i=0; i<dist.length(); i++){
+		for (int i=0; i<dist.length; i++){
+			int next = minVertex(dist, visited);
 			while(next!=end){
-				int next = minVertex(dist, visited);
 				visited[next] = true;
 				
 				int[] neighbors = graph.neighbors(next);
@@ -116,7 +116,7 @@ public class WeightedGraph {
 					int v = neighbors[j];
 					int d = dist[next] + graph.getWeight(next, v);
 					if (dist[v] > d){
-						dis[v] = d;
+						dist[v] = d;
 						prev[v] = next;
 					}
 				}
@@ -127,9 +127,9 @@ public class WeightedGraph {
 	public static int minVertex( int[] dist, boolean[] visited){
 		int x = Integer.MAX_VALUE;
 		int y = -1;	//will return this if graph isnt connected here
-		for(int i=0; i<dist.length(); i++){
+		for(int i=0; i<dist.length; i++){
 			//check if visited and if distance isnt infinity
-			if(!v[i] && dist[i]<x){
+			if(!visited[i] && dist[i]<x){
 				y = i;
 				x = dist[i];
 			}
