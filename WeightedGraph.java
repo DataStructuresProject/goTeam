@@ -1,4 +1,4 @@
-//Michelle Alty and Kenny Williams were authors of this class 
+//Michelle Alty and Kenny Williams were authors of this class.
 public class WeightedGraph {
 	
 	private int [][] edges;			//adjacency matrix
