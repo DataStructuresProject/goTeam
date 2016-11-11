@@ -3,7 +3,7 @@ import java.sql.*;
 //authored by Heather Bell
 public class SaveToDatabase {
 
-	private static String url = "jdbc:ucanaccess://C:/Users/Heather/Documents/Database1.accdb";
+	private static String url = "jdbc:ucanaccess://Database1.accdb";
 	
 	public static void main(String args[]){
 		//createTable("PATHS", "STARTING_POINT, ENDING_POINT, ARRAY_OF_POINTS");
@@ -25,8 +25,8 @@ public class SaveToDatabase {
 		
 		Connection conn = DriverManager.getConnection(url, "", "");
 		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery("CREATE TABLE " + tableName
-									   + " (" + columns + ")");
+		st.execute("CREATE TABLE " + tableName
+									   + " (" + columns + ");");
 		st.close();
 		conn.close();
 		
