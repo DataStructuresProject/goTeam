@@ -1,8 +1,13 @@
-//Michelle Alty and Kenny Williams were authors of this class.
+//Michelle Alty and Kenny Williams were authors of this class
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
 public class WeightedGraph {
 	
 	private int [][] edges;			//adjacency matrix
-	private Object [] vertexName;	//array to hold the names of the vertexes
+	private Object [] vertexName;	//array to hold the names of the vertices
 	
 	public WeightedGraph (int num){
 		//instantiate
@@ -65,13 +70,13 @@ public class WeightedGraph {
 			return 0;
 	}
 	
-	//return an array of adjacent vertexes 
+	//return an array of adjacent vertices 
 	public int [] neighbors (int vertex){
 		int count = 0;
-		for (int i = 0; i < edges[vertex].length; i++){
+		for (int i = 0; i < edges[vertex].length; i ++){
 			//see if there are any edges from that vertex
 			if (edges[vertex][i] > 0)
-				count++;
+				count ++;
 		}
 		int[] neighbor = new int[count];
 		count = 0;
@@ -80,7 +85,7 @@ public class WeightedGraph {
 			if(edges[vertex][i]>0){
 				//include other vertex (i) if there is an edge
 				neighbor[count] = i;
-				count++;
+				count ++;
 			}
 		}
 		return neighbor;
@@ -92,12 +97,11 @@ public class WeightedGraph {
 			System.out.print(vertexName[i] + ": ");
 			for (int j = 0; j < edges[i].length; j++){
 				if (edges[i][j] > 0)
-					System.out.print(vertexName[j] + ":" + edges[i][j] + " ");
+					System.out.print(vertexName[j] + ":" + edges[i][j] + " ");;
 			}
 			System.out.println();
 		}
 	}
-	
 	public static int[] dijkstra(WeightedGraph graph, int start, int end){
 		int []  dist = new int[graph.size()];	//shortest distance from source
 		int[] prev = new int[graph.size()];	//previous node in the path
@@ -153,7 +157,31 @@ public class WeightedGraph {
     
 	public static void main(String args[]){
 		//create the weighted graph here
-		WeightedGraph graph = new WeightedGraph(100);
+		
+		/*
+		 * public static void createTable (String tableName, String columns)
+		   public static void addToDatabase(String table, String values)
+		   public static void removeFromDatabase(String table, String pKeyOfRecord)
+		   public static String getPKey(String table)
+		   public static boolean checkElement()
+		   public static boolean checkDatabase(String table)
+		   
+		   Create an instance of the Database class then call the "get" methods to 
+		   get the data you need for the Weighted Graph class. 
+		 */
+		SaveToDatabase db = new SaveToDatabase();
+		int numVertex = db.getNumVertex();
+		WeightedGraph graph = new WeightedGraph(numVertex);
+		int numEdges = db.getNumEdges();
+		
+		int vertexCount = 0;
+		while(vertexCount < numVertex){
+			graph.setVertexName(vertexCount, String.valueOf(vertexCount));
+			graph.setVertexName(vertexCount+1, String.valueOf(vertexCount+1));
+			graph.addEdge(vertexCount, vertexCount+1, db.getWeight(vertexCount,vertexCount+1));
+			vertexCount ++;
+		}
+		
 		graph.setVertexName(0, "V1");
 		graph.setVertexName(1, "V2");
 		graph.setVertexName(2, "V3");
@@ -170,7 +198,6 @@ public class WeightedGraph {
 		
 		int[] prev;
 		prev = dijkstra(graph, 0, 4);
-		
 		printPath(graph, prev, 0, 4);
 		
 
