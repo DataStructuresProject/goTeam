@@ -1,4 +1,4 @@
-//Michelle Alty and Kenny Williams were authors of this class
+//Michelle Alty and Kenny Williams were authors of this class.
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
