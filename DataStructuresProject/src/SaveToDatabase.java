@@ -224,7 +224,7 @@ public class SaveToDatabase {
 		try{
 			Connection conn = DriverManager.getConnection(url, "", "");
 			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM NODES");
+			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM NODE");
 			rs.next();
 			num = rs.getInt(1);
 			rs.close();
@@ -241,7 +241,7 @@ public class SaveToDatabase {
 		try{
 			Connection conn = DriverManager.getConnection(url, "", "");
 			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM NODES");
+			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM EDGE");
 			rs.next();
 			num = rs.getInt(1);
 			rs.close();
@@ -253,17 +253,17 @@ public class SaveToDatabase {
 		return num;
 	}
 	
-	public double getWeight(int v1, int v2){
-		double d = 0;
+	public int getWeight(int v1, int v2){
+		int d = 0;
 		try{
 			Connection conn = DriverManager.getConnection(url, "", "");
 			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT WEIGHT FROM EDGES");
-			while(!rs.isAfterLast()){
-				if(rs.getMetaData().equals(v1)){
-					
+			ResultSet rs = st.executeQuery("SELECT WEIGHT FROM EDGE WHERE NODEA_INDEX = " + v1 + " AND NODEB_INDEX = " + v2);
+			/*while(!rs.isAfterLast()){
+				if(rs.getMetaData().equals(v1)){	
 				}
-			}
+			}*/
+			d = rs.getInt(1);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
