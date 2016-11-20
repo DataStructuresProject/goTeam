@@ -1,0 +1,188 @@
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import javax.swing.JLabel;
+import java.awt.Frame;
+import java.awt.Graphics;
+
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.border.BevelBorder;
+import javax.imageio.ImageIO;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
+import net.miginfocom.swing.MigLayout;
+import java.awt.Label;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Random;
+
+import javax.swing.JButton;
+
+public class MapGUI extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6440095840815213964L;
+	private JPanel contentPane;
+	String loc1 = new String("Yount Hall");
+	String loc2 = new String("Yount Hall");
+	String locs = loc1+" to "+loc2;
+	String[] choices = {"No Selection", "-EMPTY-", 
+							"-EMPTY-", "-EMPTY-", "-EMPTY-", "-EMPTY-"};
+
+	// Launch the application.
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					MapGUI frame = new MapGUI();
+					frame.setVisible(true);
+					frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	// Create the frame
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public MapGUI() throws IOException {
+		setResizable(false);
+		setTitle("Map Project");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 828, 381);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		// Lists are in East Panel
+		JPanel EastPanel = new JPanel();
+		EastPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		contentPane.add(EastPanel, BorderLayout.EAST);
+		EastPanel.setLayout(new MigLayout("", "[70px,grow][24px]", "[20px][20px][][][][][][]"));
+		
+		// Starting locations
+		JComboBox locations1 = new JComboBox();
+		locations1.setModel(new DefaultComboBoxModel(new String[] {"Yount Hall", "Memorial Hall", "Flory Hall", "Old Gymnasium", 
+				"Paul V. Phibbs Maintenance Center", "Honors Houses", "Office of Alumni Relations", "Office of Institutional Advancement", 
+				"Carter Center", "Alexander Mack Memorial Library", "Center for Engaged Learning", "Wright Hall", "Heritage Hall", "313 Dinkel", 
+				"Geisert Hall", "Bowman Hall", "McKinney Center", "Wampler Apartments", "Wakeman Hall", "Blue Ridge Hall", "Daleville Hall", 
+				"Dillion Hall", "Funkhouser Center", "Campus Police", "Moomaw Hall", "Rebecca Hall", "Kline Campus Center", "Cole Hall", 
+				"Stone Village", "Center for Cultural Engagement", "Bicknell House", "President's House", "Nininger Hall", "Tennis Courts", 
+				"Turf Field", "Baseball Fields", "Soccer Field", "Practice Fields"}));
+		EastPanel.add(locations1, "cell 0 0,alignx center,aligny top");
+		
+		JLabel lblStart = new JLabel("Start");
+		EastPanel.add(lblStart, "cell 1 0,alignx center,aligny center");
+		
+		locations1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				String s = (String) locations1.getSelectedItem();
+				loc1 = s;
+				locs = loc1+" to "+loc2;
+			}
+		});
+		
+		// Ending Locations
+		JComboBox locations2 = new JComboBox();
+		locations2.setModel(new DefaultComboBoxModel(new String[] {"Yount Hall", "Memorial Hall", "Flory Hall", "Old Gymnasium", 
+				"Paul V. Phibbs Maintenance Center", "Honors Houses", "Office of Alumni Relations", "Office of Institutional Advancement", 
+				"Carter Center", "Alexander Mack Memorial Library", "Center for Engaged Learning", "Wright Hall", "Heritage Hall", "313 Dinkel", 
+				"Geisert Hall", "Bowman Hall", "McKinney Center", "Wampler Apartments", "Wakeman Hall", "Blue Ridge Hall", "Daleville Hall", 
+				"Dillion Hall", "Funkhouser Center", "Campus Police", "Moomaw Hall", "Rebecca Hall", "Kline Campus Center", "Cole Hall", 
+				"Stone Village", "Center for Cultural Engagement", "Bicknell House", "President's House", "Nininger Hall", "Tennis Courts", 
+				"Turf Field", "Baseball Fields", "Soccer Field", "Practice Fields"}));
+		EastPanel.add(locations2, "cell 0 1,growx,aligny top");
+		
+		JLabel lblEnd = new JLabel("End");
+		EastPanel.add(lblEnd, "cell 1 1,alignx center,aligny center");
+		
+		locations2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				String s = (String) locations2.getSelectedItem();
+				loc2 = s;
+				locs = loc1+" to "+loc2;
+			}
+		});
+		
+		// List of saved paths
+		JComboBox savedPaths = new JComboBox();
+		EastPanel.add(savedPaths, "cell 0 5,growx");
+		Label lblSavedPaths = new Label("Saved Paths");
+		DefaultComboBoxModel selections = new DefaultComboBoxModel<>(choices);
+		savedPaths.setModel(selections);
+		EastPanel.add(lblSavedPaths, "cell 1 5,alignx center,aligny center");
+		
+		// button to save path
+		JButton buttonSavePath = new JButton("Save Path");
+		EastPanel.add(buttonSavePath, "cell 0 7");
+		buttonSavePath.setSelected(false);
+		if (buttonSavePath.isSelected()){
+			Edge[] edges = SaveToDatabase.getEdges();
+			Node[] nodes = SaveToDatabase.getNodes();
+			
+			for (int x=1; x<=7; x++){
+				if (x==7) {
+					choices[1] = locs;
+				}
+				else if (choices[x].equals("-EMPTY-")){
+					choices[x] = locs;
+				}
+			}
+		}
+		
+		// Put map in here
+		JPanel MapPanel = new JPanel(); 
+		BufferedImage image = ImageIO.read(new File("map.png"));
+		Draw picLabel = new Draw(new ImageIcon(image));
+		MapPanel.add(picLabel);
+		MapPanel.repaint();
+		contentPane.add(MapPanel, BorderLayout.CENTER);
+		
+		buttonSavePath.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				int i = savedPaths.getSelectedIndex();
+				if (i == 0)
+					for (i = 1; i < choices.length && !choices[i].equals("-EMPTY-"); i++);
+				if (i == choices.length)
+					i = 1;
+				choices[i] = locs;
+				savedPaths.setModel(new DefaultComboBoxModel(choices));
+				savedPaths.setSelectedIndex(i);
+				selections.setSelectedItem(locs);
+				repaint();
+			}
+		});
+		
+	} 
+	
+	class Draw extends JLabel {
+		public Draw(ImageIcon imageIcon) {
+			super(imageIcon);
+		}
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			Random rand = new Random();
+			//Add actual drawing algorithms in place of the code below; this method is called when repaint() is called anywhere
+			g.setColor(Color.YELLOW);
+			g.drawLine(rand.nextInt(1002), rand.nextInt(700), rand.nextInt(1002), rand.nextInt(700));
+		}
+	}
+
+}
