@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.sql.*;
+import java.util.ArrayList;
 
 //authored by Heather Bell
 public class SaveToDatabase {
@@ -89,6 +90,7 @@ public class SaveToDatabase {
 			e.printStackTrace();
 		}
 		
+
 	}
 	
 	//will add saved paths into a database
@@ -270,5 +272,106 @@ public class SaveToDatabase {
 		return d;
 	}
 	
+
+	public static Edge[] getEdges(){
+		try{
+			Connection conn = DriverManager.getConnection(url, "", "");
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("SELECT NODEA_INDEX,NODEB_INDEX,WEIGHT,START_IND,END_IND FROM EDGE");
+			ArrayList<Edge> edges = new ArrayList<>();
+			Point[] list = getPaths();
+			while (rs.next()) {
+				int first = rs.getInt(4) - 1;
+				int last = rs.getInt(5);
+				Point[] points = new Point[last - first];
+				for (int j = first; j < last; j++) {
+					points[j - first] = list[j];
+				}
+				edges.add(new Edge(rs.getDouble(3), rs.getInt(1) - 1, rs.getInt(2) - 1, points));
+			}
+			rs.close();
+			st.close();
+			conn.close();
+			Edge[] values = new Edge[edges.size()];
+			for (int i = 0; i < edges.size(); i++)
+				values[i] = edges.get(i);
+			return values;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
+	public static int[] getEntrances(){
+		try{
+			Connection conn = DriverManager.getConnection(url, "", "");
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("SELECT NODE_INDEX FROM ENTRANCE");
+			ArrayList<Integer> entrances = new ArrayList<>();
+			while (rs.next()) {
+				entrances.add(rs.getInt(1) - 1);
+			}
+			rs.close();
+			st.close();
+			conn.close();
+			int[] values = new int[entrances.size()];
+			for (int i = 0; i < entrances.size(); i++)
+				values[i] = entrances.get(i);
+			return values;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static Node[] getNodes(){
+		try{
+			Connection conn = DriverManager.getConnection(url, "", "");
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("SELECT X_POS,Y_POS,IS_LOCATION,IS_MAIN_NODE,NAME,START_INDEX,END_INDEX FROM NODE");
+			ArrayList<Node> nodes = new ArrayList<>();
+			int[] list = getEntrances();
+			while (rs.next()) {
+				int first = rs.getInt(6) - 1;
+				int last = rs.getInt(7);
+				int[] entrances = new int[last - first];
+				for (int j = first; j < last; j++) {
+					entrances[j - first] = list[j];
+				}
+				nodes.add(new Node(rs.getBoolean(3), rs.getBoolean(4), rs.getString(5), rs.getInt(1), rs.getInt(2), entrances));
+			}
+			rs.close();
+			st.close();
+			conn.close();
+			Node[] values = new Node[nodes.size()];
+			for (int i = 0; i < nodes.size(); i++)
+				values[i] = nodes.get(i);
+			return values;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static Point[] getPaths(){
+		try{
+			Connection conn = DriverManager.getConnection(url, "", "");
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("SELECT X_POSITION,Y_POSITION FROM PATH");
+			ArrayList<Point> points = new ArrayList<>();
+			for (int i = 0; rs.next(); i++) {
+				points.add(new Point(rs.getInt(1), rs.getInt(2)));
+			}
+			rs.close();
+			st.close();
+			conn.close();
+			Point[] values = new Point[points.size()];
+			for (int i = 0; i < points.size(); i++)
+				values[i] = points.get(i);
+			return values;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
