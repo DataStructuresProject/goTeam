@@ -38,6 +38,9 @@ public class MapGUI extends JFrame {
 	 */
 	private static final long serialVersionUID = -6440095840815213964L;
 	private JPanel contentPane;
+	Edge[] edges;
+	Node[] nodes;
+	WeightedGraph graph;
 	String loc1 = new String("Yount Hall");
 	String loc2 = new String("Yount Hall");
 	String locs = loc1+" to "+loc2;
@@ -62,6 +65,14 @@ public class MapGUI extends JFrame {
 	// Create the frame
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public MapGUI() throws IOException {
+		
+		edges = SaveToDatabase.getEdges();
+		nodes = SaveToDatabase.getNodes();
+		graph = new WeightedGraph(nodes.length);
+		for (int i = 0; i < edges.length; i++) {
+			graph.addEdge(edges[i].nodeA, edges[i].nodeB, edges[i].weight);
+		}
+		
 		setResizable(false);
 		setTitle("Map Project");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -133,19 +144,6 @@ public class MapGUI extends JFrame {
 		JButton buttonSavePath = new JButton("Save Path");
 		EastPanel.add(buttonSavePath, "cell 0 7");
 		buttonSavePath.setSelected(false);
-		if (buttonSavePath.isSelected()){
-			Edge[] edges = SaveToDatabase.getEdges();
-			Node[] nodes = SaveToDatabase.getNodes();
-			
-			for (int x=1; x<=7; x++){
-				if (x==7) {
-					choices[1] = locs;
-				}
-				else if (choices[x].equals("-EMPTY-")){
-					choices[x] = locs;
-				}
-			}
-		}
 		
 		// Put map in here
 		JPanel MapPanel = new JPanel(); 
