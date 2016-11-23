@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +42,8 @@ public class MapGUI extends JFrame {
 	Edge[] edges;
 	Node[] nodes;
 	WeightedGraph graph;
+	Node startNode;
+	Node endNode;
 	String loc1 = new String("Geisert Hall");
 	String loc2 = new String("Geisert Hall");
 	String locs = loc1+" to "+loc2;
@@ -169,6 +172,47 @@ public class MapGUI extends JFrame {
 				selections.setSelectedItem(locs);
 				repaint();
 			}
+		});
+		
+		picLabel.addMouseMotionListener(new MouseMotionListener() {
+			public void mouseDragged(MouseEvent drag) {
+				
+			}
+			public void mouseMoved(MouseEvent move) {
+				
+			}
+		});
+		
+		picLabel.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent click) {
+				boolean onNode = false;
+				for (Node n : nodes) {
+					if (n.isLocation && Math.sqrt(Math.pow(n.xPos - click.getX(), 2) + Math.pow(n.yPos - click.getY(), 2)) < 10) {
+						System.out.println("Clicked on node: " + n.name);
+						if (click.isShiftDown()) {
+							endNode = n;
+							int i;
+							for (i = 0; i < list.length && !list[i].equals(n.name); i++) {
+							}
+							if (i < list.length) {
+								locations2.setSelectedIndex(i);
+							}
+						} else {
+							startNode = n;
+							int i;
+							for (i = 0; i < list.length && !list[i].equals(n.name); i++);
+							if (i < list.length) {
+								locations1.setSelectedIndex(i);
+							}
+						}
+					}
+				}
+			}
+			public void mouseEntered(MouseEvent arg0) {}
+			public void mouseExited(MouseEvent arg0) {}
+			public void mousePressed(MouseEvent arg0) {}
+			public void mouseReleased(MouseEvent arg0) {}
+			
 		});
 		
 	} 
