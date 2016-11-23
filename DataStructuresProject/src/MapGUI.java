@@ -41,8 +41,8 @@ public class MapGUI extends JFrame {
 	Edge[] edges;
 	Node[] nodes;
 	WeightedGraph graph;
-	String loc1 = new String("Yount Hall");
-	String loc2 = new String("Yount Hall");
+	String loc1 = new String("Geisert Hall");
+	String loc2 = new String("Geisert Hall");
 	String locs = loc1+" to "+loc2;
 	String[] choices = {"No Selection", "-EMPTY-", 
 							"-EMPTY-", "-EMPTY-", "-EMPTY-", "-EMPTY-"};
@@ -89,18 +89,16 @@ public class MapGUI extends JFrame {
 		
 		// Starting locations
 		JComboBox locations1 = new JComboBox();
-		SaveToDatabase db = new SaveToDatabase();
-		Node[] nodes = db.getNodes();
 		int count=0;
 		for(int i=0; i<nodes.length; i++){
-			if(nodes[i].isLocation){
+			if(nodes[i].isLocation && nodes[i].isMainNode){
 				count++;
 			}
 		}
 		String[] list = new String[count];
 		int j=0;
 		for(int i=0; i<nodes.length; i++){
-			if(nodes[i].isLocation){
+			if(nodes[i].isLocation && nodes[i].isMainNode){
 				list[j] = nodes[i].name;
 				j++;
 			}
@@ -149,19 +147,6 @@ public class MapGUI extends JFrame {
 		JButton buttonSavePath = new JButton("Save Path");
 		EastPanel.add(buttonSavePath, "cell 0 7");
 		buttonSavePath.setSelected(false);
-		if (buttonSavePath.isSelected()){
-			Edge[] edges = SaveToDatabase.getEdges();
-			//Node[] nodes = SaveToDatabase.getNodes();
-			
-			for (int x=1; x<=7; x++){
-				if (x==7) {
-					choices[1] = locs;
-				}
-				else if (choices[x].equals("-EMPTY-")){
-					choices[x] = locs;
-				}
-			}
-		}
 		
 		// Put map in here
 		JPanel MapPanel = new JPanel(); 
