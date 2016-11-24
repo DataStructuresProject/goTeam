@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -38,8 +39,13 @@ public class MapGUI extends JFrame {
 	 */
 	private static final long serialVersionUID = -6440095840815213964L;
 	private JPanel contentPane;
-	String loc1 = new String("Yount Hall");
-	String loc2 = new String("Yount Hall");
+	Edge[] edges;
+	Node[] nodes;
+	WeightedGraph graph;
+	Node startNode;
+	Node endNode;
+	String loc1 = new String("Geisert Hall");
+	String loc2 = new String("Geisert Hall");
 	String locs = loc1+" to "+loc2;
 	String[] choices = {"No Selection", "-EMPTY-", 
 							"-EMPTY-", "-EMPTY-", "-EMPTY-", "-EMPTY-"};
@@ -62,6 +68,13 @@ public class MapGUI extends JFrame {
 	// Create the frame
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public MapGUI() throws IOException {
+		edges = SaveToDatabase.getEdges();
+		nodes = SaveToDatabase.getNodes();
+		graph = new WeightedGraph(nodes.length);
+		for (int i = 0; i < edges.length; i++) {
+			graph.addEdge(edges[i].nodeA, edges[i].nodeB, edges[i].weight);
+		}
+		
 		setResizable(false);
 		setTitle("Map Project");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -79,13 +92,22 @@ public class MapGUI extends JFrame {
 		
 		// Starting locations
 		JComboBox locations1 = new JComboBox();
-		locations1.setModel(new DefaultComboBoxModel(new String[] {"Yount Hall", "Memorial Hall", "Flory Hall", "Old Gymnasium", 
-				"Paul V. Phibbs Maintenance Center", "Honors Houses", "Office of Alumni Relations", "Office of Institutional Advancement", 
-				"Carter Center", "Alexander Mack Memorial Library", "Center for Engaged Learning", "Wright Hall", "Heritage Hall", "313 Dinkel", 
-				"Geisert Hall", "Bowman Hall", "McKinney Center", "Wampler Apartments", "Wakeman Hall", "Blue Ridge Hall", "Daleville Hall", 
-				"Dillion Hall", "Funkhouser Center", "Campus Police", "Moomaw Hall", "Rebecca Hall", "Kline Campus Center", "Cole Hall", 
-				"Stone Village", "Center for Cultural Engagement", "Bicknell House", "President's House", "Nininger Hall", "Tennis Courts", 
-				"Turf Field", "Baseball Fields", "Soccer Field", "Practice Fields"}));
+		int count=0;
+		for(int i=0; i<nodes.length; i++){
+			if(nodes[i].isLocation && nodes[i].isMainNode){
+				count++;
+			}
+		}
+		String[] list = new String[count];
+		int j=0;
+		for(int i=0; i<nodes.length; i++){
+			if(nodes[i].isLocation && nodes[i].isMainNode){
+				list[j] = nodes[i].name;
+				j++;
+			}
+		}
+		locations1.setModel(new DefaultComboBoxModel(list));
+
 		EastPanel.add(locations1, "cell 0 0,alignx center,aligny top");
 		
 		JLabel lblStart = new JLabel("Start");
@@ -101,13 +123,8 @@ public class MapGUI extends JFrame {
 		
 		// Ending Locations
 		JComboBox locations2 = new JComboBox();
-		locations2.setModel(new DefaultComboBoxModel(new String[] {"Yount Hall", "Memorial Hall", "Flory Hall", "Old Gymnasium", 
-				"Paul V. Phibbs Maintenance Center", "Honors Houses", "Office of Alumni Relations", "Office of Institutional Advancement", 
-				"Carter Center", "Alexander Mack Memorial Library", "Center for Engaged Learning", "Wright Hall", "Heritage Hall", "313 Dinkel", 
-				"Geisert Hall", "Bowman Hall", "McKinney Center", "Wampler Apartments", "Wakeman Hall", "Blue Ridge Hall", "Daleville Hall", 
-				"Dillion Hall", "Funkhouser Center", "Campus Police", "Moomaw Hall", "Rebecca Hall", "Kline Campus Center", "Cole Hall", 
-				"Stone Village", "Center for Cultural Engagement", "Bicknell House", "President's House", "Nininger Hall", "Tennis Courts", 
-				"Turf Field", "Baseball Fields", "Soccer Field", "Practice Fields"}));
+		locations2.setModel(new DefaultComboBoxModel(list));
+
 		EastPanel.add(locations2, "cell 0 1,growx,aligny top");
 		
 		JLabel lblEnd = new JLabel("End");
@@ -133,19 +150,6 @@ public class MapGUI extends JFrame {
 		JButton buttonSavePath = new JButton("Save Path");
 		EastPanel.add(buttonSavePath, "cell 0 7");
 		buttonSavePath.setSelected(false);
-		if (buttonSavePath.isSelected()){
-			Edge[] edges = SaveToDatabase.getEdges();
-			Node[] nodes = SaveToDatabase.getNodes();
-			
-			for (int x=1; x<=7; x++){
-				if (x==7) {
-					choices[1] = locs;
-				}
-				else if (choices[x].equals("-EMPTY-")){
-					choices[x] = locs;
-				}
-			}
-		}
 		
 		// Put map in here
 		JPanel MapPanel = new JPanel(); 
@@ -168,6 +172,47 @@ public class MapGUI extends JFrame {
 				selections.setSelectedItem(locs);
 				repaint();
 			}
+		});
+		
+		picLabel.addMouseMotionListener(new MouseMotionListener() {
+			public void mouseDragged(MouseEvent drag) {
+				
+			}
+			public void mouseMoved(MouseEvent move) {
+				
+			}
+		});
+		
+		picLabel.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent click) {
+				boolean onNode = false;
+				for (Node n : nodes) {
+					if (n.isLocation && Math.sqrt(Math.pow(n.xPos - click.getX(), 2) + Math.pow(n.yPos - click.getY(), 2)) < 10) {
+						System.out.println("Clicked on node: " + n.name);
+						if (click.isShiftDown()) {
+							endNode = n;
+							int i;
+							for (i = 0; i < list.length && !list[i].equals(n.name); i++) {
+							}
+							if (i < list.length) {
+								locations2.setSelectedIndex(i);
+							}
+						} else {
+							startNode = n;
+							int i;
+							for (i = 0; i < list.length && !list[i].equals(n.name); i++);
+							if (i < list.length) {
+								locations1.setSelectedIndex(i);
+							}
+						}
+					}
+				}
+			}
+			public void mouseEntered(MouseEvent arg0) {}
+			public void mouseExited(MouseEvent arg0) {}
+			public void mousePressed(MouseEvent arg0) {}
+			public void mouseReleased(MouseEvent arg0) {}
+			
 		});
 		
 	} 

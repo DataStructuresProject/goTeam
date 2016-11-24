@@ -1,4 +1,4 @@
-//Michelle Alty and Kenny Williams were authors of this class.
+//Michelle Alty and Kenny Williams were authors of this class
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -6,12 +6,12 @@ import java.sql.Statement;
 
 public class WeightedGraph {
 	
-	private int [][] edges;			//adjacency matrix
+	private double [][] edges;			//adjacency matrix
 	private Object [] vertexName;	//array to hold the names of the vertices
 	
 	public WeightedGraph (int num){
 		//instantiate
-		edges = new int [num][num];
+		edges = new double [num][num];
 		vertexName = new Object [num];	
 	}
 	
@@ -32,9 +32,9 @@ public class WeightedGraph {
 	}
 	
 	//Add an edge with weight (distance)
-	public void addEdge (int start, int end, int weight){
-		edges[start][end] = weight;
-		edges[end][start] = weight;
+	public void addEdge (int start, int end, double d){
+		edges[start][end] = d;
+		edges[end][start] = d;
 	}
 	
 	//Check if an Edge is implemented 
@@ -61,7 +61,7 @@ public class WeightedGraph {
 	}
 	
 	//return weight of specified edge
-	public int getWeight (int start, int end){
+	public double getWeight (int start, int end){
 		if(edges[start][end] > 0)
 			return edges[start][end];
 		else if(edges[end][start] > 0)
@@ -103,13 +103,14 @@ public class WeightedGraph {
 		}
 	}
 	public static int[] dijkstra(WeightedGraph graph, int start, int end){
-		int []  dist = new int[graph.size()];	//shortest distance from source
+		double []  dist = new double[graph.size()];	//shortest distance from source
 		int[] prev = new int[graph.size()];	//previous node in the path
 		boolean[] visited = new boolean[graph.size()];
 		for(int i=0; i<dist.length; i++){
 			dist[i] = Integer.MAX_VALUE;	//as close to infinity as possible
 		}
 		dist[start] = 0;	//distance from source to source is 0
+		
 		for (int i=0; i<dist.length; i++){
 			int next = minVertex(dist, visited);
 			if(next!=end){
@@ -117,7 +118,7 @@ public class WeightedGraph {
 				int[] neighbors = graph.neighbors(next);
 				for(int j = 0; j<neighbors.length; j++){
 					int v = neighbors[j];
-					int d = dist[next] + graph.getWeight(next, v);
+					double d = dist[next] + graph.getWeight(next, v);
 					if (dist[v] > d){
 						dist[v] = d;
 						prev[v] = next;
@@ -131,8 +132,8 @@ public class WeightedGraph {
 		}
 		return prev;
 	}
-	public static int minVertex( int[] dist, boolean[] visited){
-		int x = Integer.MAX_VALUE;
+	public static int minVertex( double[] dist, boolean[] visited){
+		double x = Integer.MAX_VALUE;
 		int y = -1;	//will return this if graph isnt connected here
 		for(int i=0; i<dist.length; i++){
 			//check if visited and if distance isnt infinity
@@ -181,24 +182,10 @@ public class WeightedGraph {
 			graph.addEdge(vertexCount, vertexCount+1, db.getWeight(vertexCount,vertexCount+1));
 			vertexCount ++;
 		}
-		
-		graph.setVertexName(0, "V1");
-		graph.setVertexName(1, "V2");
-		graph.setVertexName(2, "V3");
-		graph.setVertexName(3, "V4");
-		graph.setVertexName(4, "V5");
-		
-		graph.addEdge(0, 1, 10);
-		graph.addEdge(0, 2, 5);
-		graph.addEdge(1, 2, 3);
-		graph.addEdge(1, 3, 1);
-		graph.addEdge(2, 4, 2);
-		graph.addEdge(2, 3, 9);
-		graph.addEdge(4, 3, 6);
-		
+
 		int[] prev;
-		prev = dijkstra(graph, 0, 4);
-		printPath(graph, prev, 0, 4);
+		prev = dijkstra(graph, 0, numEdges);
+		printPath(graph, prev, 0, numEdges);
 		
 
 	}
