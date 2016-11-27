@@ -186,9 +186,9 @@ public class WeightedGraph {
 		for(int j=0; j<numEdges; j++){
 			graph.addEdge(edges[j].nodeA, edges[j].nodeB, edges[j].weight);
 		}
-		int[] prev;
-		prev = dijkstra(graph, 0, 183);
-		printPath(graph, prev, 0, 183);
+		//int[] prev;
+		//prev = dijkstra(graph, 0, 183);
+		//printPath(graph, prev, 0, 183);
 		
 
 	}
