@@ -12,13 +12,34 @@ public class SaveToDatabase {
 	
 	public static void main(String args[]){
 		
-		createTable("NODE", "NODE_INDEX AUTOINCREMENT PRIMARY KEY, X_POS NUMERIC NOT NULL, Y_POS NUMERIC " +
+		/*createTable("NODE", "NODE_INDEX AUTOINCREMENT PRIMARY KEY, X_POS NUMERIC NOT NULL, Y_POS NUMERIC " +
 					"NOT NULL, IS_LOCATION BOOLEAN NOT NULL, IS_MAIN_NODE BOOLEAN NOT NULL, NAME VARCHAR(64), " +
 					"START_INDEX NUMERIC, END_INDEX NUMERIC");
 		createTable("ENTRANCE", "INDEX AUTOINCREMENT PRIMARY KEY, NODE_INDEX NUMERIC");
 		createTable("EDGE", "EDGE_I AUTOINCREMENT PRIMARY KEY, NODEA_INDEX NUMERIC NOT NULL, NODEB_INDEX NUMERIC NOT NULL, WEIGHT DOUBLE NOT NULL, " +
 					"START_IND NUMERIC, END_IND NUMERIC");
 		createTable("PATH", "IND AUTOINCREMENT PRIMARY KEY, X_POSITION NUMERIC NOT NULL, Y_POSITION NUMERIC NOT NULL");
+		
+		createTable("PATH_NODES_1", "INDEX NUMERIC PRIMARY KEY, NODE_INDEX NUMERIC");
+		createTable("PATH_NODES_2", "INDEX NUMERIC PRIMARY KEY, NODE_INDEX NUMERIC");
+		createTable("PATH_NODES_3", "INDEX NUMERIC PRIMARY KEY, NODE_INDEX NUMERIC");
+		createTable("PATH_NODES_4", "INDEX NUMERIC PRIMARY KEY, NODE_INDEX NUMERIC");
+		createTable("PATH_NODES_5", "INDEX NUMERIC PRIMARY KEY, NODE_INDEX NUMERIC");
+		
+		int[] nodes = {198, 3, 7, 9, 29, 14};
+		int[] nodes2 = {1923, 3, 67, 9, 29};
+		savePath(3, nodes);
+		savePath(1, nodes);
+		savePath(4, nodes2);
+		savePath(3, nodes2);
+		
+		int[][] save = savedPaths();
+		for (int i = 0; i < save.length; i++) {
+			for (int j = 0; j < save[i].length; j++) {
+				System.out.print(save[i][j] + " ");
+			}
+			System.out.println();
+		}
 		
 		try{
 			//nodes
@@ -89,8 +110,60 @@ public class SaveToDatabase {
 		}catch(IOException | ClassNotFoundException e){
 			e.printStackTrace();
 		}
-		
+		*/
 
+	}
+	
+	//saves a path to a saved path table
+	public static void savePath(int saveNum, int[] nodes) {
+		try{
+			
+			Connection conn = DriverManager.getConnection(url, "", "");
+			Statement st = conn.createStatement();
+			st.executeUpdate("DELETE FROM PATH_NODES_" + saveNum);
+			for (int i = 0; i < nodes.length; i++) {
+				addToDatabase("PATH_NODES_" + saveNum, (i + 1) + "," + nodes[i]);
+			}
+			st.close();
+			conn.close();
+			
+			} catch(Exception e){
+				e.printStackTrace();
+			}
+	}
+	
+	//returns array of five arrays of indexes of nodes in saved paths; arrays with -1 as the only element indicate an empty save slot
+	public static int[][] savedPaths() {
+		try{
+			Connection conn = DriverManager.getConnection(url, "", "");
+			Statement st = conn.createStatement();
+			int[][] savedPaths = new int[5][];
+			for (int i = 0; i < 5; i++) {
+				ResultSet rs = st.executeQuery("SELECT NODE_INDEX FROM PATH_NODES_" + (i + 1));
+				int row = 0;
+				while(rs.next())
+					row = rs.getRow();
+				rs.close();
+				if (row == 0) {
+					savedPaths[i] = new int[] {-1};
+				} else {
+					savedPaths[i] = new int[row];
+					ResultSet rs2 = st.executeQuery("SELECT NODE_INDEX FROM PATH_NODES_" + (i + 1));
+					for (int j = 0; rs2.next(); j++) {
+						savedPaths[i][j] = rs2.getInt(1);
+					}
+					rs2.close();
+				}
+			}
+			
+			st.close();
+			conn.close();
+			
+			return savedPaths;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	//will add saved paths into a database
