@@ -118,6 +118,10 @@ public class MapGUI extends JFrame {
 				String s = (String) locations1.getSelectedItem();
 				loc1 = s;
 				locs = loc1+" to "+loc2;
+				if(locs.length() > 40){
+					loc1=loc1.substring(0, 20);
+					loc2=loc2.substring(0, 20);
+				}
 			}
 		});
 		
@@ -135,6 +139,10 @@ public class MapGUI extends JFrame {
 				String s = (String) locations2.getSelectedItem();
 				loc2 = s;
 				locs = loc1+" to "+loc2;
+				if(locs.length() > 40){
+					loc1=loc1.substring(0, 20);
+					loc2=loc2.substring(0, 20);
+				}
 			}
 		});
 		
