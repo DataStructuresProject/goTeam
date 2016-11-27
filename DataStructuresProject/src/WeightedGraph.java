@@ -174,18 +174,21 @@ public class WeightedGraph {
 		int numVertex = db.getNumVertex();
 		WeightedGraph graph = new WeightedGraph(numVertex);
 		int numEdges = db.getNumEdges();
+		Node [] nodes;
+		Edge[] edges;
 		
-		int vertexCount = 0;
-		while(vertexCount < numVertex){
-			graph.setVertexName(vertexCount, String.valueOf(vertexCount));
-			graph.setVertexName(vertexCount+1, String.valueOf(vertexCount+1));
-			graph.addEdge(vertexCount, vertexCount+1, db.getWeight(vertexCount,vertexCount+1));
-			vertexCount ++;
+		nodes=db.getNodes();
+		edges=db.getEdges();
+		
+		for(int i=0; i<numVertex; i++){
+			graph.setVertexName(i, String.valueOf(i));
 		}
-
+		for(int j=0; j<numEdges; j++){
+			graph.addEdge(edges[j].nodeA, edges[j].nodeB, edges[j].weight);
+		}
 		int[] prev;
-		prev = dijkstra(graph, 0, numEdges);
-		printPath(graph, prev, 0, numEdges);
+		prev = dijkstra(graph, 0, 183);
+		printPath(graph, prev, 0, 183);
 		
 
 	}
