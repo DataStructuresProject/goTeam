@@ -99,10 +99,14 @@ public class MapGUI extends JFrame {
 			}
 		}
 		String[] list = new String[count];
+		int[] listXPos = new int[count];//these two can be used
+		int[] listYPos = new int[count];//for making nodes visible
 		int j=0;
 		for(int i=0; i<nodes.length; i++){
 			if(nodes[i].isLocation && nodes[i].isMainNode){
 				list[j] = nodes[i].name;
+				listXPos[j] = nodes[i].xPos;
+				listYPos[j] = nodes[i].yPos;
 				j++;
 			}
 		}
@@ -235,7 +239,11 @@ public class MapGUI extends JFrame {
 			//Add actual drawing algorithms in place of the code below; this method is called when repaint() is called anywhere
 			g.setColor(Color.YELLOW);
 			g.drawLine(rand.nextInt(1002), rand.nextInt(700), rand.nextInt(1002), rand.nextInt(700));
-		}
+		}/*
+		public void paint(Graphics g, int x, int y){
+			g.setColor(Color.YELLOW);
+			g.drawLine(x, y, x, y);
+		}*/
 	}
 
 }
