@@ -110,6 +110,7 @@ public class MapGUI extends JFrame {
 				j++;
 			}
 		}
+
 		locations1.setModel(new DefaultComboBoxModel(list));
 
 		EastPanel.add(locations1, "cell 0 0,alignx center,aligny top");
@@ -182,9 +183,26 @@ public class MapGUI extends JFrame {
 				savedPaths.setModel(new DefaultComboBoxModel(choices));
 				savedPaths.setSelectedIndex(i);
 				selections.setSelectedItem(locs);
+				int start=0;
+				int end=0;
+				int[] d;
+				//System.out.println(loc1 + loc2);
+				for(int j1=0; j1<nodes.length; j1++){
+					//System.out.println(nodes[i].name);
+					if(nodes[j1].isLocation && nodes[j1].name.equals(loc1)){
+						start = j1+1;
+					}
+					if(nodes[j1].isLocation && nodes[j1].name.equals(loc2)){
+						end = j1+1;
+					}
+				}
+				//System.out.println("START: "+start+"END: "+end);
+				d = WeightedGraph.dijkstra(graph, start, end);
+				SaveToDatabase.savePath(i, d);
 				repaint();
 			}
 		});
+		
 		
 		picLabel.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseDragged(MouseEvent drag) {
@@ -220,6 +238,7 @@ public class MapGUI extends JFrame {
 					}
 				}
 			}
+			
 			public void mouseEntered(MouseEvent arg0) {}
 			public void mouseExited(MouseEvent arg0) {}
 			public void mousePressed(MouseEvent arg0) {}
@@ -237,12 +256,15 @@ public class MapGUI extends JFrame {
 			super.paintComponent(g);
 			Random rand = new Random();
 			//Add actual drawing algorithms in place of the code below; this method is called when repaint() is called anywhere
+
 			g.setColor(Color.YELLOW);
 			g.drawLine(rand.nextInt(1002), rand.nextInt(700), rand.nextInt(1002), rand.nextInt(700));
-		}/*
-		public void paint(Graphics g, int x, int y){
+
+		}
+		/*public void paint(Graphics g, int x, int y){
 			g.setColor(Color.YELLOW);
-			g.drawLine(x, y, x, y);
+
+		   
 		}*/
 	}
 
