@@ -1,3 +1,4 @@
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -12,6 +13,7 @@ import javax.swing.JOptionPane;
 
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -374,10 +376,43 @@ public class MapGUI extends JFrame {
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			Random rand = new Random();
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setColor(Color.getHSBColor((float)0.65, (float)0.7, (float)0.95));
+			g2.setStroke(new BasicStroke(7));
+			
 			//Add actual drawing algorithms in place of the code below; this method is called when repaint() is called anywhere
-
-			g.setColor(Color.YELLOW);
-			g.drawLine(rand.nextInt(1002), rand.nextInt(700), rand.nextInt(1002), rand.nextInt(700));
+			//g2.drawLine(rand.nextInt(1002), rand.nextInt(700), rand.nextInt(1002), rand.nextInt(700));
+			if (currentPath[0] != currentPath[currentPath.length - 1]) {
+				System.out.println("Test 1");
+				for (int i = 0; i < currentPath.length - 1; i++) {
+					int drawEdge = -1;
+					for (int j = 0; j < edges.length; j++) {
+						if ((edges[j].nodeA == currentPath[i] && edges[j].nodeB == currentPath[i + 1]) || (edges[j].nodeB == currentPath[i] && edges[j].nodeA == currentPath[i + 1])) {
+							drawEdge = j;
+						}
+					}
+					Point[] points = edges[drawEdge].points;
+					for (int j = 0; j < points.length - 1; j++) {
+						g2.drawLine(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
+					}
+				}
+				g2.setColor(Color.getHSBColor((float)0.50, (float)0.9, (float)0.85));
+				g2.setStroke(new BasicStroke(3));
+				for (int i = 0; i < currentPath.length - 1; i++) {
+					int drawEdge = -1;
+					for (int j = 0; j < edges.length; j++) {
+						if ((edges[j].nodeA == currentPath[i] && edges[j].nodeB == currentPath[i + 1]) || (edges[j].nodeB == currentPath[i] && edges[j].nodeA == currentPath[i + 1])) {
+							drawEdge = j;
+						}
+					}
+					Point[] points = edges[drawEdge].points;
+					for (int j = 0; j < points.length - 1; j++) {
+						g2.drawLine(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
+					}
+				}
+				g2.fillOval(nodes[currentPath[0]].xPos - 6, nodes[currentPath[0]].yPos - 6, 12, 12);
+				g2.fillOval(nodes[currentPath[currentPath.length - 1]].xPos - 6, nodes[currentPath[currentPath.length - 1]].yPos - 6, 12, 12);
+			}
 
 		}
 		/*public void paint(Graphics g, int x, int y){
