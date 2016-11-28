@@ -3,6 +3,8 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Composite;
+import java.awt.CompositeContext;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,6 +27,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
 import net.miginfocom.swing.MigLayout;
 import java.awt.Label;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -33,6 +36,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +53,7 @@ public class MapGUI extends JFrame {
 	private JPanel contentPane;
 	static Edge[] edges;
 	static Node[] nodes;
-	static Node[][] storedPaths = new Node[5][2];
+	static Node[][] storedPaths = new Node[5][];
 	static WeightedGraph graph;
 	static Node startNode;
 	static Node endNode;
@@ -86,7 +90,10 @@ public class MapGUI extends JFrame {
 		for (int i = 0; i < edges.length; i++) {
 			graph.addEdge(edges[i].nodeA, edges[i].nodeB, edges[i].weight);
 		}
-		int[][] saveInput = SaveToDatabase.savedPaths();
+		for (int i = 0; i < 5; i++) {
+			storedPaths[i] = new Node[2];
+		}
+		/*int[][] saveInput = SaveToDatabase.savedPaths();
 		for (int i = 0; i < 5; i++) {
 			if (saveInput[i][0] != -1) {
 				for (int j = 0; j < nodes.length; j++) {
@@ -114,12 +121,12 @@ public class MapGUI extends JFrame {
 		for (int i = 0; i < 5; i++) {
 			if (storedPaths[i][0] != null) {
 				if ((storedPaths[i][0].name + " to " + storedPaths[i][1].name).length() > 40) {
-					choices[i + 1] = storedPaths[i][0].name.substring(0, 20) + " to " + storedPaths[i][1].name.substring(0, 20);
+					choices[i + 1] = storedPaths[i][0].name.substring(0, storedPaths[i][0].name.length() > 20 ? 20 : storedPaths[i][0].name.length()) + " to " + storedPaths[i][1].name.substring(0, storedPaths[i][1].name.length() > 20 ? 20 : storedPaths[i][1].name.length());
 				} else {
 					choices[i + 1] = storedPaths[i][0].name + " to " + storedPaths[i][1].name;
 				}
 			}
-		}
+		}*/
 		
 		setResizable(false);
 		setTitle("Map Project");
@@ -169,14 +176,17 @@ public class MapGUI extends JFrame {
 				String s = (String) locations1.getSelectedItem();
 				loc1 = s;
 				locs = loc1+" to "+loc2;
-				if(loc1.length() > 40)
-					loc1=loc1.substring(0, 20);
-				if(loc2.length() > 40)
-					loc2=loc2.substring(0, 20);
-				
+				if(locs.length() > 40){
+					if (loc1.length() > 20)
+						loc1=loc1.substring(0, 20);
+					if (loc2.length() > 20)
+						loc2=loc2.substring(0, 20);
+				}
 				for(int i=0; i<nodes.length; i++){
-					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, 20).equals(loc1.substring(0, 20))){
+					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, nodes[i].name.length() > 20 ? 20 : nodes[i].name.length()).equals(loc1.substring(0, loc1.length() > 20 ? 20 : loc1.length()))){
 						startNode = nodes[i];
+						currentPath = calculatePath(-1);
+						repaint();
 					}
 				}
 			}
@@ -193,30 +203,20 @@ public class MapGUI extends JFrame {
 		
 		locations2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				boolean short1 = false;
-				boolean short2 = false;
 				String s = (String) locations2.getSelectedItem();
 				loc2 = s;
 				locs = loc1+" to "+loc2;
-				if(loc1.length() > 40){
-					loc1=loc1.substring(0, 20);
-					short1=true;
+				if(locs.length() > 40){
+					if (loc1.length() > 20)
+						loc1=loc1.substring(0, 20);
+					if (loc2.length() > 20)
+						loc2=loc2.substring(0, 20);
 				}
-				if(loc2.length() > 40){
-					loc2=loc2.substring(0, 20);
-					short2 = true;
-				}
-				
 				for(int i=0; i<nodes.length; i++){
-					if(short2){
-						if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, 20).equals(loc2)){
-							endNode = nodes[i];
-						}
-					}
-					else{
-						if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.equals(loc2)){
-							endNode = nodes[i];
-						}
+					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, nodes[i].name.length() > 20 ? 20 : nodes[i].name.length()).equals(loc2.substring(0, loc2.length() > 20 ? 20 : loc2.length()))){
+						endNode = nodes[i];
+						currentPath = calculatePath(-1);
+						repaint();
 					}
 				}
 			}
@@ -241,8 +241,6 @@ public class MapGUI extends JFrame {
 					for (int i = 0; i < locations1.getItemCount(); i++) {
 						if (locations1.getItemAt(i).equals(storedPaths[savedPaths.getSelectedIndex()][0].name)) {
 							locations1.setSelectedIndex(i);
-							System.out.println("Test");
-							locations1.setSelectedItem(locations1.getItemAt(i));
 						}
 					}
 					for (int i = 0; i < locations2.getItemCount(); i++) {
@@ -256,9 +254,9 @@ public class MapGUI extends JFrame {
 		});
 		
 		// button to save path
-		/*JButton buttonSavePath = new JButton("Save Path");
-		EastPanel.add(buttonSavePath, "cell 0 7");
-		buttonSavePath.setSelected(false);*/
+		JButton buttonSavePath = new JButton("Save Path");
+		//EastPanel.add(buttonSavePath, "cell 0 7");
+		buttonSavePath.setSelected(false);
 		
 		// Put map in here
 		JPanel MapPanel = new JPanel(); 
@@ -268,7 +266,7 @@ public class MapGUI extends JFrame {
 		MapPanel.repaint();
 		contentPane.add(MapPanel, BorderLayout.CENTER);
 		
-		/*buttonSavePath.addActionListener(new ActionListener() {
+		buttonSavePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				int i = savedPaths.getSelectedIndex();
 				if (i == 0)
@@ -279,14 +277,13 @@ public class MapGUI extends JFrame {
 				savedPaths.setModel(new DefaultComboBoxModel(choices));
 				savedPaths.setSelectedIndex(i);
 				selections.setSelectedItem(locs);
-				int[] pathArray = calculatePath(-1);
-				currentPath = pathArray;
-				SaveToDatabase.savePath(i, pathArray);
+				currentPath = calculatePath(-1);
+				SaveToDatabase.savePath(i, currentPath);
 				storedPaths[i][0] = startNode;
 				storedPaths[i][1] = endNode;
 				repaint();
 			}
-		});*/
+		});
 		
 		
 		picLabel.addMouseMotionListener(new MouseMotionListener() {
@@ -338,11 +335,12 @@ public class MapGUI extends JFrame {
 				public void keyReleased(KeyEvent arg0) {}
 				public void keyTyped(KeyEvent arg0) {
 					if (arg0.getKeyChar() == 'S' && arg0.isShiftDown()) {
-						JOptionPane.showMessageDialog(null, "Alty, Michelle \n\n"+ "Bell, Heather\n\n"+"Jordan, Cassandra\n\n"+"Stahl, Daniel\n\n"+"Williams, Kenny");
+						JOptionPane.showMessageDialog(null, "Alty, Michelle \n\n"+ "Green, Heather\n\n"+"Jordan, Cassandra\n\n"+"Stahl, Daniel\n\n"+"Williams, Kenny");
 					}
 				}
 			});
 		}
+		
 	}
 	
 	public static int[] calculatePath(int selectedIndex) {
@@ -427,8 +425,13 @@ public class MapGUI extends JFrame {
 						g2.drawLine(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
 					}
 				}
-				g2.fillOval(nodes[currentPath[0]].xPos - 6, nodes[currentPath[0]].yPos - 6, 12, 12);
-				g2.fillOval(nodes[currentPath[currentPath.length - 1]].xPos - 6, nodes[currentPath[currentPath.length - 1]].yPos - 6, 12, 12);
+				g2.setColor(Color.getHSBColor((float)0.4, (float)0.9, (float)0.8));
+				for (int i = 2; i < 9; i++) {
+					g2.fillOval(nodes[currentPath[0]].xPos - i, nodes[currentPath[0]].yPos - (3 * i) + 2, i * 2, i * 2);
+				}
+				for (int i = 2; i < 9; i++) {
+					g2.fillOval(nodes[currentPath[currentPath.length - 1]].xPos - i, nodes[currentPath[currentPath.length - 1]].yPos - (3 * i) + 2, i * 2, i * 2);
+				}
 			}
 
 		}
