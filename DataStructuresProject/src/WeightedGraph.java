@@ -182,13 +182,18 @@ public class WeightedGraph {
 		
 		for(int i=0; i<numVertex; i++){
 			graph.setVertexName(i, String.valueOf(i));
+			if(nodes[i].isLocation){
+				graph.setVertexName(i, nodes[i].name);
+				graph.addEdge(i, 0, Integer.MAX_VALUE);
+			}
 		}
 		for(int j=0; j<numEdges; j++){
 			graph.addEdge(edges[j].nodeA, edges[j].nodeB, edges[j].weight);
 		}
-		//int[] prev;
-		//prev = dijkstra(graph, 0, 183);
-		//printPath(graph, prev, 0, 183);
+		graph.print();
+		int[] prev;
+		prev = dijkstra(graph, 0, 183);
+		printPath(graph, prev, 0, 183);
 		
 
 	}
