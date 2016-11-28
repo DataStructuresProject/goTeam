@@ -1,4 +1,3 @@
-//Daniel Stahl was an author of this class
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -29,6 +28,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -40,15 +40,16 @@ public class MapGUI extends JFrame {
 	 */
 	private static final long serialVersionUID = -6440095840815213964L;
 	private JPanel contentPane;
-	Edge[] edges;
-	Node[] nodes;
-	WeightedGraph graph;
-	Node startNode;
-	Node endNode;
-	String loc1 = new String("Geisert Hall");
-	String loc2 = new String("Geisert Hall");
-	String locs = loc1+" to "+loc2;
-	String[] choices = {"No Selection", "-EMPTY-", 
+	static Edge[] edges;
+	static Node[] nodes;
+	static Node[][] storedPaths = new Node[5][2];
+	static WeightedGraph graph;
+	static Node startNode;
+	static Node endNode;
+	static String loc1 = new String("Geisert Hall");
+	static String loc2 = new String("Geisert Hall");
+	static String locs = loc1+" to "+loc2;
+	static String[] choices = {"No Selection", "-EMPTY-", 
 							"-EMPTY-", "-EMPTY-", "-EMPTY-", "-EMPTY-"};
 
 	// Launch the application.
@@ -71,9 +72,45 @@ public class MapGUI extends JFrame {
 	public MapGUI() throws IOException {
 		edges = SaveToDatabase.getEdges();
 		nodes = SaveToDatabase.getNodes();
+		startNode = nodes[196];
+		endNode = nodes[196];
 		graph = new WeightedGraph(nodes.length);
 		for (int i = 0; i < edges.length; i++) {
 			graph.addEdge(edges[i].nodeA, edges[i].nodeB, edges[i].weight);
+		}
+		int[][] saveInput = SaveToDatabase.savedPaths();
+		for (int i = 0; i < 5; i++) {
+			if (saveInput[i][0] != -1) {
+				for (int j = 0; j < nodes.length; j++) {
+					if (nodes[j].isLocation) {
+						for (int k = 0; k < nodes[j].entrances.length; k++) {
+							if (nodes[j].entrances[k] == saveInput[i][0]) {
+								storedPaths[i][0] = nodes[j];
+								System.out.println(i + " - start");
+							}
+						}
+					}
+				}
+				for (int j = 0; j < nodes.length; j++) {
+					if (nodes[j].isLocation) {
+						for (int k = 0; k < nodes[j].entrances.length; k++) {
+							if (nodes[j].entrances[k] == saveInput[i][saveInput.length - 1]) {
+								storedPaths[i][1] = nodes[j];
+								System.out.println(i + " - end");
+							}
+						}
+					}
+				}
+			}
+		}
+		for (int i = 0; i < 5; i++) {
+			if (storedPaths[i][0] != null) {
+				if ((storedPaths[i][0].name + " to " + storedPaths[i][1].name).length() > 40) {
+					choices[i + 1] = storedPaths[i][0].name.substring(0, 20) + " to " + storedPaths[i][1].name.substring(0, 20);
+				} else {
+					choices[i + 1] = storedPaths[i][0].name + " to " + storedPaths[i][1].name;
+				}
+			}
 		}
 		
 		setResizable(false);
@@ -128,6 +165,11 @@ public class MapGUI extends JFrame {
 					loc1=loc1.substring(0, 20);
 					loc2=loc2.substring(0, 20);
 				}
+				for(int i=0; i<nodes.length; i++){
+					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, 20).equals(loc1.substring(0, 20))){
+						startNode = nodes[i];
+					}
+				}
 			}
 		});
 		
@@ -149,6 +191,11 @@ public class MapGUI extends JFrame {
 					loc1=loc1.substring(0, 20);
 					loc2=loc2.substring(0, 20);
 				}
+				for(int i=0; i<nodes.length; i++){
+					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, 20).equals(loc2.substring(0, 20))){
+						endNode = nodes[i];
+					}
+				}
 			}
 		});
 		
@@ -159,6 +206,27 @@ public class MapGUI extends JFrame {
 		DefaultComboBoxModel selections = new DefaultComboBoxModel<>(choices);
 		savedPaths.setModel(selections);
 		EastPanel.add(lblSavedPaths, "cell 1 5,alignx center,aligny center");
+		
+		savedPaths.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				if (savedPaths.getSelectedItem().equals("-EMPTY-") || savedPaths.getSelectedIndex() == 0) {
+					int[] pathArray = calculatePath(-1);
+				} else {
+					int[] pathArray = calculatePath(savedPaths.getSelectedIndex());
+					for (int i = 0; i < locations1.getItemCount(); i++) {
+						if (locations1.getItemAt(i).equals(storedPaths[savedPaths.getSelectedIndex()][0].name)) {
+							locations1.setSelectedIndex(i);
+						}
+					}
+					for (int i = 0; i < locations2.getItemCount(); i++) {
+						if (locations2.getItemAt(i).equals(storedPaths[savedPaths.getSelectedIndex()][1].name)) {
+							locations2.setSelectedIndex(i);
+						}
+					}
+				}
+				repaint();
+			}
+		});
 		
 		// button to save path
 		JButton buttonSavePath = new JButton("Save Path");
@@ -184,22 +252,10 @@ public class MapGUI extends JFrame {
 				savedPaths.setModel(new DefaultComboBoxModel(choices));
 				savedPaths.setSelectedIndex(i);
 				selections.setSelectedItem(locs);
-				int start=0;
-				int end=0;
-				int[] d;
-				//System.out.println(loc1 + loc2);
-				for(int j1=0; j1<nodes.length; j1++){
-					//System.out.println(nodes[i].name);
-					if(nodes[j1].isLocation && nodes[j1].name.equals(loc1)){
-						start = j1+1;
-					}
-					if(nodes[j1].isLocation && nodes[j1].name.equals(loc2)){
-						end = j1+1;
-					}
-				}
-				//System.out.println("START: "+start+"END: "+end);
-				d = WeightedGraph.dijkstra(graph, start, end);
-				SaveToDatabase.savePath(i, d);
+				int[] pathArray = calculatePath(-1);
+				SaveToDatabase.savePath(i, pathArray);
+				storedPaths[i][0] = startNode;
+				storedPaths[i][1] = endNode;
 				repaint();
 			}
 		});
@@ -247,7 +303,48 @@ public class MapGUI extends JFrame {
 			
 		});
 		
-	} 
+	}
+	
+	public static int[] calculatePath(int selectedIndex) {
+		if (selectedIndex != -1) {
+			startNode = storedPaths[selectedIndex][0];
+			endNode = storedPaths[selectedIndex][1];
+		}
+		//System.out.println("START: "+start+"END: "+end);
+		int startEntrance = -1;
+		double startDist = Double.MAX_VALUE;
+		for (int j = 0; j < startNode.entrances.length; j++) {
+			double distance = Math.sqrt(Math.pow((nodes[startNode.entrances[j]].xPos - endNode.xPos), 2) + Math.pow((nodes[startNode.entrances[j]].yPos - endNode.yPos), 2));
+			if (distance < startDist) {
+				startEntrance = startNode.entrances[j];
+				startDist = distance;
+			}
+		}
+		int endEntrance = -1;
+		double endDist = Double.MAX_VALUE;
+		for (int j = 0; j < endNode.entrances.length; j++) {
+			double distance = Math.sqrt(Math.pow((nodes[endNode.entrances[j]].xPos - startNode.xPos), 2) + Math.pow((nodes[endNode.entrances[j]].yPos - startNode.yPos), 2));
+			if (distance < endDist) {
+				endEntrance = endNode.entrances[j];
+				endDist = distance;
+			}
+		}
+		int[] d = WeightedGraph.dijkstra(graph, startEntrance, endEntrance);
+		System.out.println(startEntrance + " " + endEntrance);
+		ArrayList<Integer> path = new ArrayList<>();
+		int x = endEntrance;
+		while (x!=startEntrance) {
+			System.out.println("Testing");
+			path.add(0, x);
+			x = d[x];
+        }
+        path.add(0, startEntrance);
+        int[] pathArray = new int[path.size()];
+        for (int j = 0; j < pathArray.length; j++) {
+        	pathArray[j] = path.get(j);
+        }
+        return pathArray;
+	}
 	
 	class Draw extends JLabel {
 		public Draw(ImageIcon imageIcon) {
