@@ -346,7 +346,7 @@ public class MapGUI extends JFrame {
 				public void keyPressed(KeyEvent e) {}
 				public void keyReleased(KeyEvent arg0) {}
 				public void keyTyped(KeyEvent arg0) {
-					if (arg0.getKeyChar() == 'S' && arg0.isShiftDown()) {
+					if (arg0.getKeyChar() == 'E' && arg0.isShiftDown()) {
 						picLabel1.setVisible(true);
 						JOptionPane.showMessageDialog(null, "Alty, Michelle \n\n"+ "Bell, Heather\n\n"+"Jordan, Cassandra\n\n"+"Stahl, Daniel\n\n"+"Williams, Kenny");
 						
