@@ -161,10 +161,11 @@ public class MapGUI extends JFrame {
 				String s = (String) locations1.getSelectedItem();
 				loc1 = s;
 				locs = loc1+" to "+loc2;
-				if(locs.length() > 40){
+				if(loc1.length() > 40)
 					loc1=loc1.substring(0, 20);
+				if(loc2.length() > 40)
 					loc2=loc2.substring(0, 20);
-				}
+				
 				for(int i=0; i<nodes.length; i++){
 					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, 20).equals(loc1.substring(0, 20))){
 						startNode = nodes[i];
@@ -187,10 +188,11 @@ public class MapGUI extends JFrame {
 				String s = (String) locations2.getSelectedItem();
 				loc2 = s;
 				locs = loc1+" to "+loc2;
-				if(locs.length() > 40){
+				if(loc1.length() > 40)
 					loc1=loc1.substring(0, 20);
+				if(loc2.length() > 40)
 					loc2=loc2.substring(0, 20);
-				}
+				
 				for(int i=0; i<nodes.length; i++){
 					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, 20).equals(loc2.substring(0, 20))){
 						endNode = nodes[i];
@@ -201,11 +203,11 @@ public class MapGUI extends JFrame {
 		
 		// List of saved paths
 		JComboBox savedPaths = new JComboBox();
-		EastPanel.add(savedPaths, "cell 0 5,growx");
+		//EastPanel.add(savedPaths, "cell 0 5,growx");
 		Label lblSavedPaths = new Label("Saved Paths");
 		DefaultComboBoxModel selections = new DefaultComboBoxModel<>(choices);
 		savedPaths.setModel(selections);
-		EastPanel.add(lblSavedPaths, "cell 1 5,alignx center,aligny center");
+		//EastPanel.add(lblSavedPaths, "cell 1 5,alignx center,aligny center");
 		
 		savedPaths.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -216,6 +218,8 @@ public class MapGUI extends JFrame {
 					for (int i = 0; i < locations1.getItemCount(); i++) {
 						if (locations1.getItemAt(i).equals(storedPaths[savedPaths.getSelectedIndex()][0].name)) {
 							locations1.setSelectedIndex(i);
+							System.out.println("Test");
+							locations1.setSelectedItem(locations1.getItemAt(i));
 						}
 					}
 					for (int i = 0; i < locations2.getItemCount(); i++) {
@@ -229,9 +233,9 @@ public class MapGUI extends JFrame {
 		});
 		
 		// button to save path
-		JButton buttonSavePath = new JButton("Save Path");
+		/*JButton buttonSavePath = new JButton("Save Path");
 		EastPanel.add(buttonSavePath, "cell 0 7");
-		buttonSavePath.setSelected(false);
+		buttonSavePath.setSelected(false);*/
 		
 		// Put map in here
 		JPanel MapPanel = new JPanel(); 
@@ -241,7 +245,7 @@ public class MapGUI extends JFrame {
 		MapPanel.repaint();
 		contentPane.add(MapPanel, BorderLayout.CENTER);
 		
-		buttonSavePath.addActionListener(new ActionListener() {
+		/*buttonSavePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				int i = savedPaths.getSelectedIndex();
 				if (i == 0)
@@ -258,7 +262,7 @@ public class MapGUI extends JFrame {
 				storedPaths[i][1] = endNode;
 				repaint();
 			}
-		});
+		});*/
 		
 		
 		picLabel.addMouseMotionListener(new MouseMotionListener() {
