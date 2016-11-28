@@ -193,17 +193,30 @@ public class MapGUI extends JFrame {
 		
 		locations2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
+				boolean short1 = false;
+				boolean short2 = false;
 				String s = (String) locations2.getSelectedItem();
 				loc2 = s;
 				locs = loc1+" to "+loc2;
-				if(loc1.length() > 40)
+				if(loc1.length() > 40){
 					loc1=loc1.substring(0, 20);
-				if(loc2.length() > 40)
+					short1=true;
+				}
+				if(loc2.length() > 40){
 					loc2=loc2.substring(0, 20);
+					short2 = true;
+				}
 				
 				for(int i=0; i<nodes.length; i++){
-					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, 20).equals(loc2.substring(0, 20))){
-						endNode = nodes[i];
+					if(short2){
+						if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, 20).equals(loc2)){
+							endNode = nodes[i];
+						}
+					}
+					else{
+						if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.equals(loc2)){
+							endNode = nodes[i];
+						}
 					}
 				}
 			}
