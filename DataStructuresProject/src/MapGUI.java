@@ -8,6 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Frame;
 import java.awt.Graphics;
 
@@ -313,11 +315,13 @@ public class MapGUI extends JFrame {
 		for (Component c : EastPanel.getComponents()) {
 			c.addKeyListener(new KeyListener() {
 				
-				public void keyPressed(KeyEvent arg0) {
-					System.out.println("Test...");
-				}
+				public void keyPressed(KeyEvent e) {}
 				public void keyReleased(KeyEvent arg0) {}
-				public void keyTyped(KeyEvent arg0) {}
+				public void keyTyped(KeyEvent arg0) {
+					if (arg0.getKeyChar() == 'S' && arg0.isShiftDown()) {
+						JOptionPane.showMessageDialog(null, "Alty, Michelle \n\n"+ "Green, Heather\n\n"+"Jordan, Cassandra\n\n"+"Stahl, Daniel\n\n"+"Williams, Kenny");
+					}
+				}
 			});
 		}
 	}
