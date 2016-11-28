@@ -8,6 +8,7 @@ import java.awt.CompositeContext;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.RootPaneContainer;
 import javax.swing.border.EmptyBorder;
 
 import javax.swing.JLabel;
@@ -141,7 +142,7 @@ public class MapGUI extends JFrame {
 		JPanel EastPanel = new JPanel();
 		EastPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		contentPane.add(EastPanel, BorderLayout.EAST);
-		EastPanel.setLayout(new MigLayout("", "[70px,grow][24px]", "[20px][20px][][][][][][]"));
+		EastPanel.setLayout(new MigLayout("", "[70px,grow][24px]", "[20px][20px][][][grow][][][]"));
 		
 		// Starting locations
 		JComboBox locations1 = new JComboBox();
@@ -200,6 +201,17 @@ public class MapGUI extends JFrame {
 		
 		JLabel lblEnd = new JLabel("End");
 		EastPanel.add(lblEnd, "cell 1 1,alignx center,aligny center");
+		
+		JPanel erniePanel = new JPanel();
+		EastPanel.add(erniePanel, "cell 0 5 2 2,grow");
+		
+		BufferedImage image2 = ImageIO.read(new File("ernie.png"));
+		Draw picLabel1 = new Draw(new ImageIcon(image2));
+		picLabel1.setVisible(false);
+		erniePanel.add(picLabel1);
+		erniePanel.repaint();;
+		
+		
 		
 		locations2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -335,7 +347,9 @@ public class MapGUI extends JFrame {
 				public void keyReleased(KeyEvent arg0) {}
 				public void keyTyped(KeyEvent arg0) {
 					if (arg0.getKeyChar() == 'S' && arg0.isShiftDown()) {
+						picLabel1.setVisible(true);
 						JOptionPane.showMessageDialog(null, "Alty, Michelle \n\n"+ "Bell, Heather\n\n"+"Jordan, Cassandra\n\n"+"Stahl, Daniel\n\n"+"Williams, Kenny");
+						
 					}
 				}
 			});
