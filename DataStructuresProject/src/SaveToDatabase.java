@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
-//authored by Heather Bell
+//authored by Heather Bell and Daniel Stahl
 public class SaveToDatabase {
 
 	private static String url = "jdbc:ucanaccess://Database1.accdb";

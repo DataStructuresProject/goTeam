@@ -1,3 +1,4 @@
+//Daniel Stahl was an author of this class
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;

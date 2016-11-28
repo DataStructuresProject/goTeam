@@ -1,3 +1,4 @@
+//Daniel Stahl was an author of this class
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

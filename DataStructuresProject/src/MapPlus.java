@@ -1,3 +1,4 @@
+//Daniel Stahl was an author of this class
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;

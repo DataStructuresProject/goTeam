@@ -1,4 +1,4 @@
-
+//Daniel Stahl was an author of this class
 public class Edge {
 	double weight;
 	int nodeA;
