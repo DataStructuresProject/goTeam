@@ -53,6 +53,7 @@ public class MapGUI extends JFrame {
 	static WeightedGraph graph;
 	static Node startNode;
 	static Node endNode;
+	static int[] currentPath = {0,0};
 	static String loc1 = new String("Geisert Hall");
 	static String loc2 = new String("Geisert Hall");
 	static String locs = loc1+" to "+loc2;
@@ -220,8 +221,10 @@ public class MapGUI extends JFrame {
 			public void actionPerformed(ActionEvent ae) {
 				if (savedPaths.getSelectedItem().equals("-EMPTY-") || savedPaths.getSelectedIndex() == 0) {
 					int[] pathArray = calculatePath(-1);
+					currentPath = pathArray;
 				} else {
 					int[] pathArray = calculatePath(savedPaths.getSelectedIndex());
+					currentPath = pathArray;
 					for (int i = 0; i < locations1.getItemCount(); i++) {
 						if (locations1.getItemAt(i).equals(storedPaths[savedPaths.getSelectedIndex()][0].name)) {
 							locations1.setSelectedIndex(i);
@@ -264,6 +267,7 @@ public class MapGUI extends JFrame {
 				savedPaths.setSelectedIndex(i);
 				selections.setSelectedItem(locs);
 				int[] pathArray = calculatePath(-1);
+				currentPath = pathArray;
 				SaveToDatabase.savePath(i, pathArray);
 				storedPaths[i][0] = startNode;
 				storedPaths[i][1] = endNode;
