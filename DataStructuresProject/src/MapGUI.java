@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,6 +23,8 @@ import net.miginfocom.swing.MigLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -307,6 +310,16 @@ public class MapGUI extends JFrame {
 			
 		});
 		
+		for (Component c : EastPanel.getComponents()) {
+			c.addKeyListener(new KeyListener() {
+				
+				public void keyPressed(KeyEvent arg0) {
+					System.out.println("Test...");
+				}
+				public void keyReleased(KeyEvent arg0) {}
+				public void keyTyped(KeyEvent arg0) {}
+			});
+		}
 	}
 	
 	public static int[] calculatePath(int selectedIndex) {
