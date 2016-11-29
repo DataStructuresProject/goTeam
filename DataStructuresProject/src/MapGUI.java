@@ -408,7 +408,13 @@ public class MapGUI extends JFrame {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setColor(Color.getHSBColor((float)0.65, (float)0.7, (float)0.95));
 			g2.setStroke(new BasicStroke(7));
-			
+			Graphics2D g3 = (Graphics2D) g;
+			g3.setColor(Color.BLUE);
+			for(int k=0; k<nodes.length; k++){
+				if(nodes[k].isLocation){
+					g3.fillOval(nodes[k].xPos, nodes[k].yPos, 9, 9);
+				}
+			}
 			//Add actual drawing algorithms in place of the code below; this method is called when repaint() is called anywhere
 			//g2.drawLine(rand.nextInt(1002), rand.nextInt(700), rand.nextInt(1002), rand.nextInt(700));
 			if (currentPath[0] != currentPath[currentPath.length - 1]) {
@@ -446,7 +452,36 @@ public class MapGUI extends JFrame {
 				for (int i = 2; i < 9; i++) {
 					g2.fillOval(nodes[currentPath[currentPath.length - 1]].xPos - i, nodes[currentPath[currentPath.length - 1]].yPos - (3 * i) + 2, i * 2, i * 2);
 				}
+				Graphics2D g4 = (Graphics2D) g;
+				g2.setColor(Color.RED);
+				for (int j = 0; j < nodes.length; j++) {
+					if (nodes[j].isLocation) {
+						for (int k = 0; k < nodes[j].entrances.length; k++) {
+							if (nodes[j].entrances[k] == currentPath[0]) {
+								g2.fillOval(nodes[j].xPos, nodes[j].yPos, 9, 9);
+								g2.setColor(Color.YELLOW);
+								if(nodes[j].xPos >= 920)
+									g2.drawString(nodes[j].name, nodes[j].xPos-60, nodes[j].yPos);
+								else
+									g2.drawString(nodes[j].name, nodes[j].xPos, nodes[j].yPos);
+								//System.out.println(nodes[j].xPos);
+							}
+							if (nodes[j].entrances[k] == currentPath[currentPath.length-1]){
+								g2.fillOval(nodes[j].xPos, nodes[j].yPos, 9, 9);
+								g2.setColor(Color.YELLOW);
+								if(nodes[j].xPos >= 920)
+									g2.drawString(nodes[j].name, nodes[j].xPos-60, nodes[j].yPos);
+								else
+									g2.drawString(nodes[j].name, nodes[j].xPos, nodes[j].yPos);							}
+							g2.setColor(Color.RED);
+						}
+					}
+				}
+				//g2.fillOval(nodes[currentPath[0]].xPos, nodes[currentPath[0]].yPos, 9, 9);
+				//g2.fillOval(nodes[currentPath[currentPath.length-1]].xPos, nodes[currentPath[currentPath.length-1]].yPos, 9, 9);
 			}
+			
+
 
 		}
 		/*public void paint(Graphics g, int x, int y){
