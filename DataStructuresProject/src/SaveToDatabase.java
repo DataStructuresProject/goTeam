@@ -8,7 +8,7 @@ import java.util.ArrayList;
 //authored by Heather Bell and Daniel Stahl
 public class SaveToDatabase {
 
-	private static String url = "jdbc:ucanaccess://Database1.accdb";
+	private static String url = "jdbc:ucanaccess://C:/BC Maps/Database1.accdb";
 	
 	public static void main(String args[]){
 		
