@@ -461,20 +461,18 @@ public class MapGUI extends JFrame {
 						g2.drawLine(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
 					}
 				}
-				
-				//////////////////////////////////////////////////////////////////////////////////
+				//set walking time
 				distance = distance*ftPerPixel;
 				time = distance*(1/ftPerMin);
 				g2.setColor(Color.WHITE);
-				//g2.drawString("Approximate Walking Time: " + (int)time + " minutes", 600,10);
 				System.out.println(distance + " " + time);
-				if(time==1){
+				if(Math.round(time)==1){
 					walkingTime.setText("Approximate Walking Time: " + Math.round(time) + " minute");
 				}
 				else{
 					walkingTime.setText("Approximate Walking Time: " + Math.round(time) + " minutes");
 				}
-				//////////////////////////////////////////////////////////////////////////////////
+				
 				for (int k = 4; k >= 0; k--) {
 					g2.setColor(Color.getHSBColor((float)(0.50 + .03*k), (float)(0.9 - .04*k), (float)(0.85 + .02*k)));
 					g2.setStroke(new BasicStroke(2 + k));
