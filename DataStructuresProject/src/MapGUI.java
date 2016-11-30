@@ -125,7 +125,7 @@ public class MapGUI extends JFrame {
 		for (int i = 0; i < 5; i++) {
 			if (storedPaths[i][0] != null) {
 				if ((storedPaths[i][0].name + " to " + storedPaths[i][1].name).length() > 40) {
-					choices[i + 1] = storedPaths[i][0].name.substring(0, storedPaths[i][0].name.length() > 20 ? 20 : storedPaths[i][0].name.length()) + " to " + storedPaths[i][1].name.substring(0, storedPaths[i][1].name.length() > 20 ? 20 : storedPaths[i][1].name.length());
+					choices[i + 1] = storedPaths[i][0].name.substring(0, storedPaths[i][0].name.length() > 20 ? 20 : storedPaths[i][0].name.length()) + (storedPaths[i][0].name.length() > 20 ? "..." : "") + " to " + storedPaths[i][1].name.substring(0, storedPaths[i][1].name.length() > 20 ? 20 : storedPaths[i][1].name.length()) + (storedPaths[i][1].name.length() > 20 ? "..." : "");
 				} else {
 					choices[i + 1] = storedPaths[i][0].name + " to " + storedPaths[i][1].name;
 				}
@@ -145,7 +145,7 @@ public class MapGUI extends JFrame {
 		JPanel EastPanel = new JPanel();
 		EastPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		contentPane.add(EastPanel, BorderLayout.EAST);
-		EastPanel.setLayout(new MigLayout("", "[70px,grow][24px]", "[20px][20px][][][grow][][][]"));
+		EastPanel.setLayout(new MigLayout("", "[70px,grow][24px]", "[20px][20px][][][][][][]"));
 		
 		// Starting locations
 		JComboBox locations1 = new JComboBox();
@@ -181,12 +181,13 @@ public class MapGUI extends JFrame {
 				loc1 = s;
 				locs = loc1+" to "+loc2;
 				if(locs.length() > 40){
-					if (loc1.length() > 20)
+					if (loc1.length() > 20) {
 						loc1=loc1.substring(0, 20);
-					if (loc2.length() > 20)
+					}
+					if (loc2.length() > 20) {
 						loc2=loc2.substring(0, 20);
+					}
 				}
-				locs = loc1+" to "+loc2;
 				if (mapClick) {
 					currentPath = calculatePath(-1);
 					repaint();
@@ -199,6 +200,7 @@ public class MapGUI extends JFrame {
 						}
 					}
 				}
+				locs = loc1+(startNode.name.length() > 20 ? "..." : "")+" to "+loc2+(endNode.name.length() > 20 ? "..." : "");
 				mapClick = false;
 			}
 		});
@@ -212,27 +214,18 @@ public class MapGUI extends JFrame {
 		JLabel lblEnd = new JLabel("End");
 		EastPanel.add(lblEnd, "cell 1 1,alignx center,aligny center");
 		
-		JPanel erniePanel = new JPanel();
-		EastPanel.add(erniePanel, "cell 0 5 2 2,grow");
-		
-		BufferedImage image2 = ImageIO.read(new File("ernie.png"));
-		Draw picLabel1 = new Draw(new ImageIcon(image2));
-		picLabel1.setVisible(false);
-		erniePanel.add(picLabel1);
-		erniePanel.repaint();;
-		
-		
-		
 		locations2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				String s = (String) locations2.getSelectedItem();
 				loc2 = s;
 				locs = loc1+" to "+loc2;
 				if(locs.length() > 40){
-					if (loc1.length() > 20)
+					if (loc1.length() > 20) {
 						loc1=loc1.substring(0, 20);
-					if (loc2.length() > 20)
+					}
+					if (loc2.length() > 20) {
 						loc2=loc2.substring(0, 20);
+					}
 				}
 				if (mapClick) {
 					currentPath = calculatePath(-1);
@@ -246,6 +239,7 @@ public class MapGUI extends JFrame {
 						}
 					}
 				}
+				locs = loc1+(startNode.name.length() > 20 ? "..." : "")+" to "+loc2+(endNode.name.length() > 20 ? "..." : "");
 				mapClick = false;
 			}
 		});
