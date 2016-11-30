@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Composite;
 import java.awt.CompositeContext;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -58,12 +59,14 @@ public class MapGUI extends JFrame {
 	static WeightedGraph graph;
 	static Node startNode;
 	static Node endNode;
+	static boolean mapClick = false;
+	static boolean listUpdate = false;
 	static int[] currentPath = {0,0};
 	static String loc1 = new String("Geisert Hall");
 	static String loc2 = new String("Geisert Hall");
 	static String locs = loc1+" to "+loc2;
 	static String[] choices = {"No Selection", "-EMPTY-", 
-							"-EMPTY-", "-EMPTY-", "-EMPTY-", "-EMPTY-"};
+							"-EMPTY- ", "-EMPTY-  ", "-EMPTY-   ", "-EMPTY-    "};
 
 	// Launch the application.
 	public static void main(String[] args) {
@@ -94,7 +97,7 @@ public class MapGUI extends JFrame {
 		for (int i = 0; i < 5; i++) {
 			storedPaths[i] = new Node[2];
 		}
-		/*int[][] saveInput = SaveToDatabase.savedPaths();
+		int[][] saveInput = SaveToDatabase.savedPaths();
 		for (int i = 0; i < 5; i++) {
 			if (saveInput[i][0] != -1) {
 				for (int j = 0; j < nodes.length; j++) {
@@ -110,7 +113,7 @@ public class MapGUI extends JFrame {
 				for (int j = 0; j < nodes.length; j++) {
 					if (nodes[j].isLocation) {
 						for (int k = 0; k < nodes[j].entrances.length; k++) {
-							if (nodes[j].entrances[k] == saveInput[i][saveInput.length - 1]) {
+							if (nodes[j].entrances[k] == saveInput[i][saveInput[i].length - 1]) {
 								storedPaths[i][1] = nodes[j];
 								System.out.println(i + " - end");
 							}
@@ -127,7 +130,7 @@ public class MapGUI extends JFrame {
 					choices[i + 1] = storedPaths[i][0].name + " to " + storedPaths[i][1].name;
 				}
 			}
-		}*/
+		}
 		
 		setResizable(false);
 		setTitle("Map Project");
@@ -183,13 +186,20 @@ public class MapGUI extends JFrame {
 					if (loc2.length() > 20)
 						loc2=loc2.substring(0, 20);
 				}
-				for(int i=0; i<nodes.length; i++){
-					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, nodes[i].name.length() > 20 ? 20 : nodes[i].name.length()).equals(loc1.substring(0, loc1.length() > 20 ? 20 : loc1.length()))){
-						startNode = nodes[i];
-						currentPath = calculatePath(-1);
-						repaint();
+				locs = loc1+" to "+loc2;
+				if (mapClick) {
+					currentPath = calculatePath(-1);
+					repaint();
+				} else {
+					for(int i=0; i<nodes.length; i++){
+						if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, nodes[i].name.length() > 20 ? 20 : nodes[i].name.length()).equals(loc1.substring(0, loc1.length() > 20 ? 20 : loc1.length()))){
+							startNode = nodes[i];
+							currentPath = calculatePath(-1);
+							repaint();
+						}
 					}
 				}
+				mapClick = false;
 			}
 		});
 		
@@ -224,50 +234,60 @@ public class MapGUI extends JFrame {
 					if (loc2.length() > 20)
 						loc2=loc2.substring(0, 20);
 				}
-				for(int i=0; i<nodes.length; i++){
-					if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, nodes[i].name.length() > 20 ? 20 : nodes[i].name.length()).equals(loc2.substring(0, loc2.length() > 20 ? 20 : loc2.length()))){
-						endNode = nodes[i];
-						currentPath = calculatePath(-1);
-						repaint();
+				if (mapClick) {
+					currentPath = calculatePath(-1);
+					repaint();
+				} else {
+					for(int i=0; i<nodes.length; i++){
+						if(nodes[i].isLocation && nodes[i].isMainNode && nodes[i].name.substring(0, nodes[i].name.length() > 20 ? 20 : nodes[i].name.length()).equals(loc2.substring(0, loc2.length() > 20 ? 20 : loc2.length()))){
+							endNode = nodes[i];
+							currentPath = calculatePath(-1);
+							repaint();
+						}
 					}
 				}
+				mapClick = false;
 			}
 		});
 		
 		// List of saved paths
 		JComboBox savedPaths = new JComboBox();
-		//EastPanel.add(savedPaths, "cell 0 5,growx");
+		EastPanel.add(savedPaths, "cell 0 5,growx");
 		Label lblSavedPaths = new Label("Saved Paths");
 		DefaultComboBoxModel selections = new DefaultComboBoxModel<>(choices);
 		savedPaths.setModel(selections);
-		//EastPanel.add(lblSavedPaths, "cell 1 5,alignx center,aligny center");
+		savedPaths.setMaximumSize(new Dimension(400,400));
+		EastPanel.add(lblSavedPaths, "cell 1 5,alignx center,aligny center");
 		
 		savedPaths.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				if (savedPaths.getSelectedItem().equals("-EMPTY-") || savedPaths.getSelectedIndex() == 0) {
-					int[] pathArray = calculatePath(-1);
-					currentPath = pathArray;
+				if (((String) savedPaths.getSelectedItem()).substring(0, 7).equals("-EMPTY-") || savedPaths.getSelectedIndex() == 0 || listUpdate) {
+					//int[] pathArray = calculatePath(-1);
+					//currentPath = pathArray;
+					listUpdate = false;
 				} else {
-					int[] pathArray = calculatePath(savedPaths.getSelectedIndex());
+					int[] pathArray = calculatePath(savedPaths.getSelectedIndex() - 1);
 					currentPath = pathArray;
 					for (int i = 0; i < locations1.getItemCount(); i++) {
-						if (locations1.getItemAt(i).equals(storedPaths[savedPaths.getSelectedIndex()][0].name)) {
+						if (locations1.getItemAt(i).equals(storedPaths[savedPaths.getSelectedIndex() - 1][0].name)) {
+							mapClick = true;
 							locations1.setSelectedIndex(i);
 						}
 					}
 					for (int i = 0; i < locations2.getItemCount(); i++) {
-						if (locations2.getItemAt(i).equals(storedPaths[savedPaths.getSelectedIndex()][1].name)) {
+						if (locations2.getItemAt(i).equals(storedPaths[savedPaths.getSelectedIndex() - 1][1].name)) {
+							mapClick = true;
 							locations2.setSelectedIndex(i);
 						}
 					}
+					repaint();
 				}
-				repaint();
 			}
 		});
 		
 		// button to save path
 		JButton buttonSavePath = new JButton("Save Path");
-		//EastPanel.add(buttonSavePath, "cell 0 7");
+		EastPanel.add(buttonSavePath, "cell 0 7");
 		buttonSavePath.setSelected(false);
 		
 		// Put map in here
@@ -282,17 +302,18 @@ public class MapGUI extends JFrame {
 			public void actionPerformed(ActionEvent ae) {
 				int i = savedPaths.getSelectedIndex();
 				if (i == 0)
-					for (i = 1; i < choices.length && !choices[i].equals("-EMPTY-"); i++);
+					for (i = 1; i < choices.length && !choices[i].substring(0, 7).equals("-EMPTY-"); i++);
 				if (i == choices.length)
 					i = 1;
 				choices[i] = locs;
 				savedPaths.setModel(new DefaultComboBoxModel(choices));
+				listUpdate = true;	
 				savedPaths.setSelectedIndex(i);
 				selections.setSelectedItem(locs);
 				currentPath = calculatePath(-1);
 				SaveToDatabase.savePath(i, currentPath);
-				storedPaths[i][0] = startNode;
-				storedPaths[i][1] = endNode;
+				storedPaths[i - 1][0] = startNode;
+				storedPaths[i - 1][1] = endNode;
 				repaint();
 			}
 		});
@@ -311,9 +332,9 @@ public class MapGUI extends JFrame {
 			public void mouseClicked(MouseEvent click) {
 				boolean onNode = false;
 				for (Node n : nodes) {
-					if (n.isLocation && Math.sqrt(Math.pow(n.xPos - click.getX(), 2) + Math.pow(n.yPos - click.getY(), 2)) < 10) {
+					if (n.isLocation && Math.sqrt(Math.pow(n.xPos - click.getX(), 2) + Math.pow(n.yPos - click.getY(), 2)) < 18) {
 						System.out.println("Clicked on node: " + n.name);
-						if (click.isShiftDown()) {
+						if (click.isShiftDown() || click.getButton() == MouseEvent.BUTTON3) {
 							endNode = n;
 							int i;
 							for (i = 0; i < list.length && !list[i].equals(n.name); i++) {
@@ -329,6 +350,7 @@ public class MapGUI extends JFrame {
 								locations1.setSelectedIndex(i);
 							}
 						}
+						mapClick = true;
 					}
 				}
 			}
@@ -364,7 +386,7 @@ public class MapGUI extends JFrame {
 			startNode = storedPaths[selectedIndex][0];
 			endNode = storedPaths[selectedIndex][1];
 		}
-		//System.out.println("START: "+start+"END: "+end);
+		System.out.println("START: "+startNode.name+"END: "+endNode.name);
 		int startEntrance = -1;
 		double startDist = Double.MAX_VALUE;
 		for (int j = 0; j < startNode.entrances.length; j++) {
@@ -420,6 +442,7 @@ public class MapGUI extends JFrame {
 			//Add actual drawing algorithms in place of the code below; this method is called when repaint() is called anywhere
 			//g2.drawLine(rand.nextInt(1002), rand.nextInt(700), rand.nextInt(1002), rand.nextInt(700));
 			if (currentPath[0] != currentPath[currentPath.length - 1]) {
+				g2.setColor(Color.getHSBColor((float)0.65, (float)0.7, (float)0.95));
 				System.out.println("Test 1");
 				for (int i = 0; i < currentPath.length - 1; i++) {
 					int drawEdge = -1;
@@ -433,26 +456,35 @@ public class MapGUI extends JFrame {
 						g2.drawLine(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
 					}
 				}
-				g2.setColor(Color.getHSBColor((float)0.50, (float)0.9, (float)0.85));
-				g2.setStroke(new BasicStroke(3));
-				for (int i = 0; i < currentPath.length - 1; i++) {
-					int drawEdge = -1;
-					for (int j = 0; j < edges.length; j++) {
-						if ((edges[j].nodeA == currentPath[i] && edges[j].nodeB == currentPath[i + 1]) || (edges[j].nodeB == currentPath[i] && edges[j].nodeA == currentPath[i + 1])) {
-							drawEdge = j;
+				for (int k = 4; k >= 0; k--) {
+					g2.setColor(Color.getHSBColor((float)(0.50 + .03*k), (float)(0.9 - .04*k), (float)(0.85 + .02*k)));
+					g2.setStroke(new BasicStroke(2 + k));
+					for (int i = 0; i < currentPath.length - 1; i++) {
+						int drawEdge = -1;
+						for (int j = 0; j < edges.length; j++) {
+							if ((edges[j].nodeA == currentPath[i] && edges[j].nodeB == currentPath[i + 1]) || (edges[j].nodeB == currentPath[i] && edges[j].nodeA == currentPath[i + 1])) {
+								drawEdge = j;
+							}
+						}
+						Point[] points = edges[drawEdge].points;
+						for (int j = 0; j < points.length - 1; j++) {
+							g2.drawLine(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
 						}
 					}
-					Point[] points = edges[drawEdge].points;
-					for (int j = 0; j < points.length - 1; j++) {
-						g2.drawLine(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
-					}
 				}
-				g2.setColor(Color.getHSBColor((float)0.4, (float)0.9, (float)0.8));
+				g2.setColor(Color.getHSBColor((float)0.4, (float)0.8, (float)0.6));
 				for (int i = 2; i < 9; i++) {
 					g2.fillOval(nodes[currentPath[0]].xPos - i, nodes[currentPath[0]].yPos - (3 * i) + 2, i * 2, i * 2);
 				}
 				for (int i = 2; i < 9; i++) {
 					g2.fillOval(nodes[currentPath[currentPath.length - 1]].xPos - i, nodes[currentPath[currentPath.length - 1]].yPos - (3 * i) + 2, i * 2, i * 2);
+				}
+				g2.setColor(Color.getHSBColor((float)0.4, (float)0.9, (float)0.8));
+				for (int i = 2; i < 8; i++) {
+					g2.fillOval(nodes[currentPath[0]].xPos - i, nodes[currentPath[0]].yPos - (3 * i), i * 2, i * 2);
+				}
+				for (int i = 2; i < 8; i++) {
+					g2.fillOval(nodes[currentPath[currentPath.length - 1]].xPos - i, nodes[currentPath[currentPath.length - 1]].yPos - (3 * i), i * 2, i * 2);
 				}
 				Graphics2D g4 = (Graphics2D) g;
 				g2.setColor(Color.RED);
