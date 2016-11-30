@@ -67,6 +67,8 @@ public class MapGUI extends JFrame {
 	static String locs = loc1+" to "+loc2;
 	static String[] choices = {"No Selection", "-EMPTY-", 
 							"-EMPTY- ", "-EMPTY-  ", "-EMPTY-   ", "-EMPTY-    "};
+	static double ftPerPixel =2.456;
+	static double ftPerMin = 272.8;
 
 	// Launch the application.
 	public static void main(String[] args) {
@@ -437,12 +439,15 @@ public class MapGUI extends JFrame {
 			//g2.drawLine(rand.nextInt(1002), rand.nextInt(700), rand.nextInt(1002), rand.nextInt(700));
 			if (currentPath[0] != currentPath[currentPath.length - 1]) {
 				g2.setColor(Color.getHSBColor((float)0.65, (float)0.7, (float)0.95));
-				System.out.println("Test 1");
+				//System.out.println("Test 1");
+				double distance = 0;
+				double time;
 				for (int i = 0; i < currentPath.length - 1; i++) {
 					int drawEdge = -1;
 					for (int j = 0; j < edges.length; j++) {
 						if ((edges[j].nodeA == currentPath[i] && edges[j].nodeB == currentPath[i + 1]) || (edges[j].nodeB == currentPath[i] && edges[j].nodeA == currentPath[i + 1])) {
 							drawEdge = j;
+							distance += edges[j].weight;
 						}
 					}
 					Point[] points = edges[drawEdge].points;
@@ -450,6 +455,14 @@ public class MapGUI extends JFrame {
 						g2.drawLine(points[j].x, points[j].y, points[j + 1].x, points[j + 1].y);
 					}
 				}
+				
+				//////////////////////////////////////////////////////////////////////////////////
+				distance = distance*ftPerPixel;
+				time = distance*(1/ftPerMin);
+				g2.setColor(Color.WHITE);
+				g2.drawString("Approximate Walking Time: " + (int)time + " minutes", 600,10);
+				System.out.println(distance + " " + time);
+				//////////////////////////////////////////////////////////////////////////////////
 				for (int k = 4; k >= 0; k--) {
 					g2.setColor(Color.getHSBColor((float)(0.50 + .03*k), (float)(0.9 - .04*k), (float)(0.85 + .02*k)));
 					g2.setStroke(new BasicStroke(2 + k));
@@ -500,11 +513,13 @@ public class MapGUI extends JFrame {
 								if(nodes[j].xPos > 800)
 									g2.drawString(nodes[j].name, nodes[j].xPos-100, nodes[j].yPos);
 								else
-									g2.drawString(nodes[j].name, nodes[j].xPos, nodes[j].yPos);							}
+									g2.drawString(nodes[j].name, nodes[j].xPos, nodes[j].yPos);	
+								}
 							g2.setColor(Color.RED);
 						}
 					}
 				}
+				
 				//g2.fillOval(nodes[currentPath[0]].xPos, nodes[currentPath[0]].yPos, 9, 9);
 				//g2.fillOval(nodes[currentPath[currentPath.length-1]].xPos, nodes[currentPath[currentPath.length-1]].yPos, 9, 9);
 			}
