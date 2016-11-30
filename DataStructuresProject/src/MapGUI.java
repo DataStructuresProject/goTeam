@@ -488,8 +488,8 @@ public class MapGUI extends JFrame {
 							if (nodes[j].entrances[k] == currentPath[0]) {
 								g2.fillOval(nodes[j].xPos, nodes[j].yPos, 9, 9);
 								g2.setColor(Color.YELLOW);
-								if(nodes[j].xPos >= 920)
-									g2.drawString(nodes[j].name, nodes[j].xPos-60, nodes[j].yPos);
+								if(nodes[j].xPos > 800)
+									g2.drawString(nodes[j].name, nodes[j].xPos-100, nodes[j].yPos);
 								else
 									g2.drawString(nodes[j].name, nodes[j].xPos, nodes[j].yPos);
 								//System.out.println(nodes[j].xPos);
@@ -497,8 +497,8 @@ public class MapGUI extends JFrame {
 							if (nodes[j].entrances[k] == currentPath[currentPath.length-1]){
 								g2.fillOval(nodes[j].xPos, nodes[j].yPos, 9, 9);
 								g2.setColor(Color.YELLOW);
-								if(nodes[j].xPos >= 920)
-									g2.drawString(nodes[j].name, nodes[j].xPos-60, nodes[j].yPos);
+								if(nodes[j].xPos > 800)
+									g2.drawString(nodes[j].name, nodes[j].xPos-100, nodes[j].yPos);
 								else
 									g2.drawString(nodes[j].name, nodes[j].xPos, nodes[j].yPos);							}
 							g2.setColor(Color.RED);
