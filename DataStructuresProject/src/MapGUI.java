@@ -473,18 +473,18 @@ public class MapGUI extends JFrame {
 					}
 				}
 				g2.setColor(Color.getHSBColor((float)0.4, (float)0.8, (float)0.6));
+				for (int i = 2; i < 10; i++) {
+					g2.fillOval(nodes[currentPath[0]].xPos - i, nodes[currentPath[0]].yPos - (3 * i) + 4, i * 2, i * 2);
+				}
+				for (int i = 2; i < 10; i++) {
+					g2.fillOval(nodes[currentPath[currentPath.length - 1]].xPos - i, nodes[currentPath[currentPath.length - 1]].yPos - (3 * i) + 4, i * 2, i * 2);
+				}
+				g2.setColor(Color.getHSBColor((float)0.4, (float)0.9, (float)0.8));
 				for (int i = 2; i < 9; i++) {
 					g2.fillOval(nodes[currentPath[0]].xPos - i, nodes[currentPath[0]].yPos - (3 * i) + 2, i * 2, i * 2);
 				}
 				for (int i = 2; i < 9; i++) {
 					g2.fillOval(nodes[currentPath[currentPath.length - 1]].xPos - i, nodes[currentPath[currentPath.length - 1]].yPos - (3 * i) + 2, i * 2, i * 2);
-				}
-				g2.setColor(Color.getHSBColor((float)0.4, (float)0.9, (float)0.8));
-				for (int i = 2; i < 8; i++) {
-					g2.fillOval(nodes[currentPath[0]].xPos - i, nodes[currentPath[0]].yPos - (3 * i), i * 2, i * 2);
-				}
-				for (int i = 2; i < 8; i++) {
-					g2.fillOval(nodes[currentPath[currentPath.length - 1]].xPos - i, nodes[currentPath[currentPath.length - 1]].yPos - (3 * i), i * 2, i * 2);
 				}
 				Graphics2D g4 = (Graphics2D) g;
 				g2.setColor(Color.RED);
