@@ -173,7 +173,7 @@ public class MapGUI extends JFrame {
 		}
 
 		locations1.setModel(new DefaultComboBoxModel(list));
-		locations1.setMaximumSize(new Dimension(350,400));
+		locations1.setMaximumSize(new Dimension(300,400));
 
 		EastPanel.add(locations1, "cell 0 0,alignx center,aligny top");
 		
@@ -213,7 +213,7 @@ public class MapGUI extends JFrame {
 		// Ending Locations
 		JComboBox locations2 = new JComboBox();
 		locations2.setModel(new DefaultComboBoxModel(list));
-		locations2.setMaximumSize(new Dimension(350,400));
+		locations2.setMaximumSize(new Dimension(300,400));
 
 		EastPanel.add(locations2, "cell 0 1,growx,aligny top");
 		
