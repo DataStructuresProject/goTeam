@@ -69,6 +69,7 @@ public class MapGUI extends JFrame {
 	static JLabel walkingTime;
 	static double ftPerPixel =2.456;
 	static double ftPerMin = 272.8;
+	static double hue;
 
 	// Launch the application.
 	public static void main(String[] args) {
@@ -384,8 +385,14 @@ public class MapGUI extends JFrame {
 					if (arg0.getKeyChar() == 'E' && arg0.isShiftDown()) {
 						//picLabel1.setVisible(true);
 						ImageIcon eagle = new ImageIcon(getClass().getResource("resources/ernie.png"));
-						JOptionPane.showMessageDialog(null,"Alty, Michelle \n\n"+ "Bell, Heather\n\n"
-								+"Jordan, Cassandra\n\n"+"Stahl, Daniel\n\n"+"Williams, Kenny", "Credits",JOptionPane.INFORMATION_MESSAGE, eagle);
+						//JOptionPane.showMessageDialog(null,"Alty, Michelle \n\n"+ "Bell, Heather\n\n"
+						//		+"Jordan, Cassandra\n\n"+"Stahl, Daniel\n\n"+"Williams, Kenny", "Credits",JOptionPane.INFORMATION_MESSAGE, eagle);
+						int reply =JOptionPane.showConfirmDialog(null, "Alty, Michelle \n\n"+ "Bell, Heather\n\n"
+										+"Jordan, Cassandra\n\n"+"Stahl, Daniel\n\n"+"Williams, Kenny","Credits", 1, 1, eagle );
+						if (reply == JOptionPane.YES_OPTION)
+							hue=0.15;
+						if(reply == JOptionPane.NO_OPTION)
+							hue=0.65;
 						
 					}
 				}
@@ -458,7 +465,7 @@ public class MapGUI extends JFrame {
 			//g2.drawLine(rand.nextInt(1002), rand.nextInt(700), rand.nextInt(1002), rand.nextInt(700));
 			walkingTime.setText("Approximate Walking Time: --");
 			if (currentPath[0] != currentPath[currentPath.length - 1]) {
-				g2.setColor(Color.getHSBColor((float)0.65, (float)0.7, (float)0.95));
+				g2.setColor(Color.getHSBColor((float)hue, (float)0.7, (float)0.95));
 				//System.out.println("Test 1");
 				double distance = 0;
 				double time;
@@ -488,7 +495,7 @@ public class MapGUI extends JFrame {
 				}
 				
 				for (int k = 4; k >= 0; k--) {
-					g2.setColor(Color.getHSBColor((float)(0.50 + .03*k), (float)(0.9 - .04*k), (float)(0.85 + .02*k)));
+					g2.setColor(Color.getHSBColor((float)((hue-0.15) + .03*k), (float)(0.9 - .04*k), (float)(0.85 + .02*k)));
 					g2.setStroke(new BasicStroke(2 + k));
 					//g2.setStroke(new BasicStroke(2 + k, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 					for (int i = 0; i < currentPath.length - 1; i++) {
