@@ -2,6 +2,7 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
@@ -25,6 +26,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 //import java.util.Random;
+import java.util.Comparator;
 
 import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
@@ -47,6 +49,9 @@ public class MapGUI extends JFrame {
 	 */
 	private static final long serialVersionUID = -6440095840815213964L;
 	private JPanel contentPane;
+	static Object[] list;
+	static int mouseX = 0;
+	static int mouseY = 0;
 	static Edge[] edges;
 	static Node[] nodes;
 	static Node[][] storedPaths = new Node[5][];
@@ -56,8 +61,8 @@ public class MapGUI extends JFrame {
 	static boolean mapClick = false;
 	static boolean listUpdate = false;
 	static int[] currentPath = {0,0};
-	static String loc1 = new String("Geisert Hall");
-	static String loc2 = new String("Geisert Hall");
+	static String loc1 = new String("313 Dinkel");
+	static String loc2 = new String("313 Dinkel");
 	static String locs = loc1+" to "+loc2;
 	static String[] choices = {"No Selection", "-EMPTY-", 
 							"-EMPTY- ", "-EMPTY-  ", "-EMPTY-   ", "-EMPTY-    "};
@@ -90,8 +95,8 @@ public class MapGUI extends JFrame {
 	public MapGUI() throws IOException, URISyntaxException {
 		edges = SaveToDatabase.getEdges();
 		nodes = SaveToDatabase.getNodes();
-		startNode = nodes[196];
-		endNode = nodes[196];
+		startNode = nodes[208];
+		endNode = nodes[208];
 		graph = new WeightedGraph(nodes.length);
 		for (int i = 0; i < edges.length; i++) {
 			graph.addEdge(edges[i].nodeA, edges[i].nodeB, edges[i].weight);
@@ -159,18 +164,21 @@ public class MapGUI extends JFrame {
 				count++;
 			}
 		}
-		String[] list = new String[count];
-		int[] listXPos = new int[count];//these two can be used
-		int[] listYPos = new int[count];//for making nodes visible
+		list = new String[count];
+		ArrayList<String> add = new ArrayList();
 		int j=0;
 		for(int i=0; i<nodes.length; i++){
 			if(nodes[i].isLocation && nodes[i].isMainNode){
-				list[j] = nodes[i].name;
-				listXPos[j] = nodes[i].xPos;
-				listYPos[j] = nodes[i].yPos;
+				add.add(nodes[i].name);
 				j++;
 			}
 		}
+		add.sort(new Comparator<String>() {
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		list = add.toArray();
 
 		locations1.setModel(new DefaultComboBoxModel(list));
 		locations1.setMaximumSize(new Dimension(300,400));
@@ -328,7 +336,9 @@ public class MapGUI extends JFrame {
 				
 			}
 			public void mouseMoved(MouseEvent move) {
-				
+				mouseX = move.getX();
+				mouseY = move.getY();
+				repaint();
 			}
 		});
 		
@@ -436,6 +446,7 @@ public class MapGUI extends JFrame {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setColor(Color.getHSBColor((float)0.65, (float)0.7, (float)0.95));
 			g2.setStroke(new BasicStroke(7));
+			//g2.setStroke(new BasicStroke(7, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 			Graphics2D g3 = (Graphics2D) g;
 			g3.setColor(Color.getHSBColor((float)0.65, (float)0.7, (float)0.95));
 			for(int k=0; k<nodes.length; k++){
@@ -479,6 +490,7 @@ public class MapGUI extends JFrame {
 				for (int k = 4; k >= 0; k--) {
 					g2.setColor(Color.getHSBColor((float)(0.50 + .03*k), (float)(0.9 - .04*k), (float)(0.85 + .02*k)));
 					g2.setStroke(new BasicStroke(2 + k));
+					//g2.setStroke(new BasicStroke(2 + k, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 					for (int i = 0; i < currentPath.length - 1; i++) {
 						int drawEdge = -1;
 						for (int j = 0; j < edges.length; j++) {
@@ -545,6 +557,29 @@ public class MapGUI extends JFrame {
 				
 				//g2.fillOval(nodes[currentPath[0]].xPos, nodes[currentPath[0]].yPos, 9, 9);
 				//g2.fillOval(nodes[currentPath[currentPath.length-1]].xPos, nodes[currentPath[currentPath.length-1]].yPos, 9, 9);
+			}
+			Boolean hover = false;
+			for (Node n : nodes) {
+				if (n.isLocation && Math.sqrt(Math.pow(n.xPos - mouseX, 2) + Math.pow(n.yPos - mouseY, 2)) < 18) {
+					g2.setColor(Color.BLACK);
+					if(n.xPos > 800) {
+						g2.drawString(n.name, n.xPos-99, n.yPos + 1);
+						g2.setColor(Color.WHITE);
+						g2.drawString(n.name, n.xPos-100, n.yPos);
+					} else {
+						g2.drawString(n.name, n.xPos + 1, n.yPos + 1);
+						g2.setColor(Color.WHITE);
+						g2.drawString(n.name, n.xPos, n.yPos);
+					}
+					hover = true;
+				}
+			}
+			if (hover) {
+				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				//getToolkit().setLockingKeyState(KeyEvent.VK_CAPS_LOCK, true);
+			} else {
+				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				//getToolkit().setLockingKeyState(KeyEvent.VK_CAPS_LOCK, false);
 			}
 			walkingTime.repaint();
 
