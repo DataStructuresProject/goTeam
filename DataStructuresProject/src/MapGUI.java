@@ -69,7 +69,7 @@ public class MapGUI extends JFrame {
 	static JLabel walkingTime;
 	static double ftPerPixel =2.456;
 	static double ftPerMin = 272.8;
-	static double hue;
+	static double hue = 0.65;
 
 	// Launch the application.
 	public static void main(String[] args) {
