@@ -330,7 +330,17 @@ public class MapGUI extends JFrame {
 				repaint();
 			}
 		});
+//Instruction Button		
+		JButton Instructions = new JButton("Instructions");
+		EastPanel.add(Instructions, "cell 0 8 ");
 		
+		Instructions.addActionListener (new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				
+				JOptionPane.showMessageDialog(null, "In the first box Select first location or left-click the location on the map "
+						+ "\nIn the second box select second location or right-click the location on the map"
+						+ "\nThe shortest path and aproximate walk time between the two locations will be presented");
+			}});		
 		
 		picLabel.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseDragged(MouseEvent drag) {
